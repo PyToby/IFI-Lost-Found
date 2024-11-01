@@ -1,6 +1,6 @@
 # The _IFILAF_ Project
 ### [Overview](#overview)
-This repository contains the code for a Lost & Found web application designed for GJK. This platform allows students, staff, and faculty to report lost and found items, making it easier to track and retrieve personal belongings within the school campus.
+This repository contains the code for a Lost & Found web application designed for GJK. This platform allows students to report lost and found items, making it easier to track and retrieve personal belongings within the school campus.
 <br>
 _Disclaimer: This website is currently hosted on a temporary domain, indicating that it is still in the development phase._
 <br>
