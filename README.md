@@ -71,4 +71,4 @@ _Disclaimer: This website is currently hosted on a temporary domain, indicating 
 
 ## 🙏 [Acknowledgments](#acknowledgments)
 
-Special thanks to [@jeohan19](https://www.github.com/jeohan19) and [@Onkvisu](https://www.github.com/onkvisu) for being able to develop this project. _Can be found in collaborators tab._
+Special thanks to [@jeohan19](https://www.github.com/jeohan19) and [@Onkvisu](https://www.github.com/onkvisu) for being able to develop this project. _Can be found in contributors tab._
