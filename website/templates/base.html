@@ -1,95 +1,72 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/output.css">
     <title>IFILAF</title>
 </head>
-<header class="bg-white backdrop-blur-sm">
-  <nav class="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
-    <div class="flex lg:flex-1">
-      <a href="#" class="-m-1.5 p-1.5">
-        <span class="sr-only">Your Company</span>
-        <p class="font-bold">IFI</p>
-        <!--<img class="h-8 w-auto" src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600" alt=""> -->
-      </a>
-    </div>
-    <div class="flex lg:hidden">
-      <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
-        <span class="sr-only">Open main menu</span>
-        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-      </button>
-    </div>
-    <div class="hidden lg:flex lg:gap-x-12">
-      <div class="relative">
-        <button type="button" class="flex items-center gap-x-1 text-sm/6 font-semibold text-gray-900" aria-expanded="false">
-          Vytvořit
-          <!--<svg class="size-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-            <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-          </svg>
-        </button>-->
-      </div>
-      <a href="#" class="text-sm/6 font-semibold text-gray-900">Filtry</a>
-      <a href="#" class="text-sm/6 font-semibold text-gray-900">O Projektu</a>
-    </div>
-    <div class="hidden lg:flex lg:flex-1 lg:justify-end">
-      <a href="#" class="text-sm/6 font-semibold text-gray-900">Sign up <span aria-hidden="true">&rarr;</span></a>
-    </div>
-  </nav>
-  <path>
-    <hr class="h-px w-4/6 mx-auto bg-gray-200 border-0 dark:bg-gray-200">
-  <!-- Mobile menu, show/hide based on menu open state. -->
-  <div class="lg:hidden" role="dialog" aria-modal="true">
-    <!-- Background backdrop, show/hide based on slide-over state. -->
-    <div class="fixed inset-0 z-10"></div>
-    <div class="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-      <div class="flex items-center justify-between">
-        <a href="#" class="-m-1.5 p-1.5">
-          <span class="sr-only">Your Company</span>
-          <img class="h-8 w-auto" src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600" alt="">
-        </a>
-        <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700">
-          <span class="sr-only">Close menu</span>
-          <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-      <div class="mt-6 flow-root">
-        <div class="-my-6 divide-y divide-gray-500/10">
-          <div class="space-y-2 py-6">
-            <div class="-mx-3">
-              <button type="button" class="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50" aria-controls="disclosure-1" aria-expanded="false">
-                Product
-                <!--
-                  Expand/collapse icon, toggle classes based on menu open state.
 
-                  Open: "rotate-180", Closed: ""
-                -->
-                <svg class="size-5 flex-none" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-                  <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-            <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Features</a>
-            <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Marketplace</a>
-            <a href="#" class="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Company</a>
-          </div>
-          <div class="py-6">
-            <a href="#" class="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50">Log in</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  
 </header>
+
 <body>
-    <h1 class="text-black text-center font-bold text-3xl p-6">Vítej poutníku!</h1>
-    
+<!-- Navbar -->
+<nav class="bg-white sticky top-0 z-50" aria-label="Global">
+  <div class="max-w-7xl mx-auto px-6 py-4">
+      <div class="flex items-center justify-between">
+          <div class="text-xl font-bold text-black">
+              IFI
+          </div>
+
+          <!-- Menu when on desktop (centered links)-->
+          <div class="hidden md:flex items-center space-x-8 justify-center flex-1 text-sm/6 font-semibold">
+            <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
+            <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+            <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+          </div>
+
+          <!-- Sign-up link aligned to the right -->
+          <div class="hidden md:flex items-center ml-aut text-sm/6 font-semibold">
+            <a href="#" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 group">
+              Přihlásit
+              <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Hamburger icon -->
+          <div class="md:hidden">
+              <button id="hamburger-icon" class="text-black focus:outline-none">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                  </svg>
+              </button>
+          </div>
+      </div>
+  </div>
+
+  <!-- Mobile Menu (Initially hidden) -->
+
+  <div id="mobile-menu" class="md:hidden hidden bg-white z-50 fixed inset-0 top-16">
+    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
+    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O projektu</a>
+    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
+        Přihlásit
+        <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+        </svg>
+    </a>
+  </div>
+
+  <!-- Literally a fucking line -->
+  <div class="w-4/5 mx-auto border-t-2 h-0.5 border-gray-200"></div>
+</nav>
+<div>
+  <h1 class="text-black text-center font-bold text-3xl p-6">Vítej poutníku!</h1>
+
+</div>
 </body>
 <script src="../static/script.js"></script>
 </html>
