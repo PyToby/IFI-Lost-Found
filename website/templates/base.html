@@ -6,67 +6,67 @@
     <link rel="stylesheet" href="../static/output.css">
     <title>IFILAF</title>
 </head>
-
-</header>
-
 <body>
-<!-- Navbar -->
-<nav class="bg-white sticky top-0 z-50" aria-label="Global">
-  <div class="max-w-7xl mx-auto px-6 py-4">
-      <div class="flex items-center justify-between">
-          <div class="text-xl font-bold text-black">
-              IFI
-          </div>
-
-          <!-- Menu when on desktop (centered links)-->
-          <div class="hidden md:flex items-center space-x-8 justify-center flex-1 text-sm/6 font-semibold">
-            <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
-            <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
-            <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-          </div>
-
-          <!-- Sign-up link aligned to the right -->
-          <div class="hidden md:flex items-center ml-aut text-sm/6 font-semibold">
-            <a href="#" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 group">
-              Přihlásit
-              <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-              </svg>
-            </a>
-          </div>
-
-          <!-- Hamburger icon -->
-          <div class="md:hidden">
-              <button id="hamburger-icon" class="text-black focus:outline-none">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                  </svg>
-              </button>
-          </div>
+  <nav class="bg-white sticky top-0 z-50" aria-label="Global">
+    <div class="flex items-center justify-between px-4 py-4 max-w-screen-lg mx-auto" >
+      <!-- Left: Logo -->
+      <div class="text-xl font-bold text-black">
+        IFILAF
       </div>
-  </div>
 
-  <!-- Mobile Menu (Initially hidden) -->
+      <!-- Right: Links -->
+      <div class="hidden md:flex items-center space-x-8 text-l font-semibold">
+        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
+        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
 
-  <div id="mobile-menu" class="md:hidden hidden bg-white z-50 fixed inset-0 top-16">
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O projektu</a>
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
+        {# if user.is_authenticated #}
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg> -->
+        {# else #}
+        <a href="#" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 group">
+          Přihlásit
+          <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+          </svg>
+        </a>
+        {# endif #}
+        
+        
+      </div>
+
+      <!-- Hamburger for small screens -->
+      <div class="md:hidden">
+        <button id="hamburger-icon" class="text-black focus:outline-none">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white z-50 fixed inset-0 top-16 text-xl font-semibold">
+      <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
+      <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+      <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+      <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
         Přihlásit
         <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
         </svg>
-    </a>
+      </a>
+    </div>
+
+    <!-- Divider -->
+    <div class="w-4/5 mx-auto border-t-2 h-0.5 border-gray-200"></div>
+  </nav>
+
+  <div>
+    <h1 class="text-black text-center font-bold text-3xl p-6">Vítej poutníku!</h1>
   </div>
 
-  <!-- Literally a fucking line -->
-  <div class="w-4/5 mx-auto border-t-2 h-0.5 border-gray-200"></div>
-</nav>
-<div>
-  <h1 class="text-black text-center font-bold text-3xl p-6">Vítej poutníku!</h1>
-
-</div>
 </body>
 <script src="../static/script.js"></script>
 </html>
