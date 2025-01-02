@@ -1,20 +1,21 @@
 from flask import Blueprint, redirect, request, url_for, session
 from flask_login import login_user, logout_user
-from oauthlib.oauth2 import WebApplicationClient
+from requests_oauthlib import OAuth2Session
 import requests
-import json
 import os
 
-from . models import User
+from .models import User
 from . import db, login_manager
 
 auth = Blueprint('auth', __name__)
 
+# Load environment variables
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-client = WebApplicationClient(GOOGLE_CLIENT_ID)
+# Create OAuth2Session instance
+oauth = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for('auth.callback', _external=True))
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -27,22 +28,14 @@ def login():
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
     # Generate the Google login URL
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
-        redirect_uri=url_for('auth.callback', _external=True),
-        scope=["openid", "email", "profile"],
-    )
+    request_uri = oauth.authorization_url(authorization_endpoint, scope=["openid", "email", "profile"])
 
     return redirect(request_uri)
 
 
-from oauthlib.oauth2 import WebApplicationClient
-
-client = WebApplicationClient(GOOGLE_CLIENT_ID)
-
 @auth.route('/callback')
 def callback():
-    # Get the authorization code
+    # Get the authorization code from the request
     code = request.args.get("code")
 
     # Get Google's provider configuration
@@ -50,7 +43,7 @@ def callback():
     token_endpoint = google_provider_cfg["token_endpoint"]
 
     # Exchange the authorization code for an access token
-    token_response = client.fetch_token(
+    token_response = oauth.fetch_token(
         token_endpoint,
         authorization_response=request.url,
         client_secret=GOOGLE_CLIENT_SECRET,
@@ -58,10 +51,7 @@ def callback():
 
     # Parse the token response and retrieve user information
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    userinfo_response = requests.get(
-        userinfo_endpoint,
-        headers={"Authorization": f"Bearer {token_response['access_token']}"}
-    )
+    userinfo_response = oauth.get(userinfo_endpoint)
 
     # Process user info
     userinfo = userinfo_response.json()
