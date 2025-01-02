@@ -14,9 +14,6 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-# Create OAuth2Session instance
-oauth = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for('auth.callback', _external=True))
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -27,11 +24,13 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
+    # Create OAuth2Session inside the route (inside request context)
+    oauth = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for('auth.callback', _external=True))
+
     # Generate the Google login URL
     request_uri = oauth.authorization_url(authorization_endpoint, scope=["openid", "email", "profile"])
 
     return redirect(request_uri)
-
 
 @auth.route('/callback')
 def callback():
@@ -41,6 +40,9 @@ def callback():
     # Get Google's provider configuration
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
+
+    # Create OAuth2Session inside the route (inside request context)
+    oauth = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for('auth.callback', _external=True))
 
     # Exchange the authorization code for an access token
     token_response = oauth.fetch_token(
