@@ -19,7 +19,7 @@ _Disclaimer: This website is currently hosted on a temporary domain, indicating 
 
 ## ✨ [Features](#features)
 
-Our Lost & Found Website for [School Name] includes a variety of user-friendly and powerful features, designed to make item management easy and efficient:
+Our Lost & Found Website for GJK includes a variety of user-friendly and powerful features, designed to make item management easy and efficient:
 
 | 🌟 Feature                    | 💻 Description                                                                 |
 |-------------------------------|------------------------------------------------------------------------------|
