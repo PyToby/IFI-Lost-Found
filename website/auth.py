@@ -36,6 +36,10 @@ def login():
     return redirect(request_uri)
 
 
+from oauthlib.oauth2 import WebApplicationClient
+
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
+
 @auth.route('/callback')
 def callback():
     # Get the authorization code
@@ -45,35 +49,27 @@ def callback():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Prepare and send token request
-    token_url, headers, body = client.prepare_token_request(
+    # Exchange the authorization code for an access token
+    token_response = client.fetch_token(
         token_endpoint,
         authorization_response=request.url,
-        redirect_url=request.base_url,
-        code=code,
-    )
-    token_response = requests.post(
-        token_url,
-        headers=headers,
-        data=body,
-        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
+        client_secret=GOOGLE_CLIENT_SECRET,
     )
 
-    # Parse token response
-    client.parse_request_body_response(json.dumps(token_response.json()))
-
-    # Get user info
+    # Parse the token response and retrieve user information
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    uri, headers, body = client.add_token(userinfo_endpoint)
-    userinfo_response = requests.get(uri, headers=headers, data=body)
+    userinfo_response = requests.get(
+        userinfo_endpoint,
+        headers={"Authorization": f"Bearer {token_response['access_token']}"}
+    )
 
     # Process user info
     userinfo = userinfo_response.json()
     if not userinfo.get("email_verified"):
         return "User email not available or not verified.", 400
 
-    # Find or create a user
-    user = User.query.filter_by(email=userinfo["email"]).first() 
+    # Find or create a user in the database
+    user = User.query.filter_by(email=userinfo["email"]).first()
     if not user:
         user = User(
             email=userinfo["email"],
