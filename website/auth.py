@@ -24,11 +24,11 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Create OAuth2Session inside the route (inside request context)
-    oauth = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for('auth.callback', _external=True))
+    # Create an OAuth2Session instance (with scope here)
+    oauth = OAuth2Session(GOOGLE_CLIENT_ID, scope=["openid", "email", "profile"], redirect_uri=url_for('auth.callback', _external=True))
 
     # Generate the Google login URL
-    request_uri = oauth.authorization_url(authorization_endpoint, scope=["openid", "email", "profile"])
+    request_uri = oauth.authorization_url(authorization_endpoint)
 
     return redirect(request_uri)
 
