@@ -1,18 +1,20 @@
-from flask import Blueprint, redirect, request, url_for, session
+from flask import Blueprint, redirect, request, url_for
 from flask_login import login_user, logout_user
 from requests_oauthlib import OAuth2Session
-import requests
 import os
+import requests
 
-from .models import User
+from . models import User
 from . import db, login_manager
 
 auth = Blueprint('auth', __name__)
 
-# Load environment variables
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
+
+# Define the OAuth2 session outside of a request (no need for WebApplicationClient)
+oauth = OAuth2Session(GOOGLE_CLIENT_ID, scope=["openid", "email", "profile"])
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -24,46 +26,45 @@ def login():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
 
-    # Create the OAuth2Session instance
-    oauth = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for('auth.callback', _external=True), scope=["openid", "email", "profile"])
+    # Build the redirect URL for the callback
+    redirect_uri = url_for('auth.callback', _external=True)
 
-    # Generate the authorization URL
-    request_uri = oauth.authorization_url(authorization_endpoint)
+    # Manually prepare the authorization URL with query parameters
+    authorization_url, state = oauth.authorization_url(
+        authorization_endpoint,
+        redirect_uri=redirect_uri
+    )
 
-    # Debug: Print out the request URI to ensure it's properly formed
-    print(f"Generated authorization URL: {request_uri}")
+    # Debug: Log the URL to check it's being generated properly
+    print(f"Generated authorization URL: {authorization_url}")
 
-    return redirect(request_uri)
+    # Return the redirect to the authorization URL
+    return redirect(authorization_url)
 
 @auth.route('/callback')
 def callback():
-    # Get the authorization code from the request
+    # Get the authorization code from the query string
     code = request.args.get("code")
 
-    # Get Google's provider configuration
+    # Get Google's provider configuration to retrieve the token endpoint
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Create OAuth2Session inside the route (inside request context)
-    oauth = OAuth2Session(GOOGLE_CLIENT_ID, redirect_uri=url_for('auth.callback', _external=True))
-
     # Exchange the authorization code for an access token
-    token_response = oauth.fetch_token(
+    token = oauth.fetch_token(
         token_endpoint,
         authorization_response=request.url,
-        client_secret=GOOGLE_CLIENT_SECRET,
+        client_secret=GOOGLE_CLIENT_SECRET
     )
 
-    # Parse the token response and retrieve user information
+    # Use the token to fetch user info
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    userinfo_response = oauth.get(userinfo_endpoint)
+    userinfo = oauth.get(userinfo_endpoint).json()
 
-    # Process user info
-    userinfo = userinfo_response.json()
+    # Handle user info and login
     if not userinfo.get("email_verified"):
-        return "User email not available or not verified.", 400
+        return "Email not verified", 400
 
-    # Find or create a user in the database
     user = User.query.filter_by(email=userinfo["email"]).first()
     if not user:
         user = User(
