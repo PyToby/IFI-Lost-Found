@@ -32,7 +32,7 @@ def login():
     # Manually prepare the authorization URL with the redirect_uri explicitly passed
     authorization_url, state = oauth.authorization_url(
         authorization_endpoint, 
-        redirect_uri=redirect_uri  # Explicitly pass the redirect_uri
+        redirect_uri=redirect_uri  # Explicitly pass the redirect_uri here
     )
 
     # Debug: Log the URL to check it's being generated properly
