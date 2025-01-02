@@ -4,7 +4,7 @@ from requests_oauthlib import OAuth2Session
 import os
 import requests
 
-from . models import User
+from .models import User
 from . import db, login_manager
 
 auth = Blueprint('auth', __name__)
@@ -13,7 +13,7 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-# Define the OAuth2 session outside of a request (no need for WebApplicationClient)
+# Define the OAuth2 session outside of a request
 oauth = OAuth2Session(GOOGLE_CLIENT_ID, scope=["openid", "email", "profile"])
 
 @login_manager.user_loader
@@ -29,9 +29,10 @@ def login():
     # Build the redirect URL for the callback
     redirect_uri = url_for('auth.callback', _external=True)
 
-    # Manually prepare the authorization URL without passing redirect_uri again
+    # Manually prepare the authorization URL with the redirect_uri explicitly passed
     authorization_url, state = oauth.authorization_url(
-        authorization_endpoint  # We do not need to pass `redirect_uri` here
+        authorization_endpoint, 
+        redirect_uri=redirect_uri  # Explicitly pass the redirect_uri
     )
 
     # Debug: Log the URL to check it's being generated properly
