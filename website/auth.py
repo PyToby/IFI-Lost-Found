@@ -29,10 +29,9 @@ def login():
     # Build the redirect URL for the callback
     redirect_uri = url_for('auth.callback', _external=True)
 
-    # Manually prepare the authorization URL with query parameters
+    # Manually prepare the authorization URL without passing redirect_uri again
     authorization_url, state = oauth.authorization_url(
-        authorization_endpoint,
-        redirect_uri=redirect_uri
+        authorization_endpoint  # We do not need to pass `redirect_uri` here
     )
 
     # Debug: Log the URL to check it's being generated properly
