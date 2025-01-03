@@ -1,8 +1,10 @@
 from flask import Blueprint, redirect, request, url_for
 from flask_login import login_user, logout_user
 from requests_oauthlib import OAuth2Session
+from .__init__ import client
 import os
 import requests
+import json
 
 from .models import User
 from . import db, login_manager
@@ -27,27 +29,16 @@ def login():
     # Build the redirect URL for the callback
     redirect_uri = url_for('auth.callback', _external=True)
 
-    # Create an OAuth2 session with the redirect URI
-    oauth = OAuth2Session(
-        GOOGLE_CLIENT_ID, 
-        scope=[
-            "https://www.googleapis.com/auth/userinfo.profile", 
-            "https://www.googleapis.com/auth/userinfo.email", 
-            "openid"
-        ],
-        redirect_uri=redirect_uri  # Pass the redirect URI
+    request_uri = client.prepare_request_uri(
+        authorization_endpoint,
+        redirect_uri=request.base_url + "/callback",
+        scope=["openid", "email", "profile"],
     )
+    print(f"Redirect URI: {request_uri}")
+    return redirect(request_uri)
 
-    # Generate the authorization URL with redirect_uri explicitly passed
-    authorization_url, state = oauth.authorization_url(authorization_endpoint)
-
-    # Debug: Log the URL to check it's being generated properly
-    print(f"Generated authorization URL: {authorization_url}")
-
-    # Return the redirect to the authorization URL
-    return redirect(authorization_url)
-
-@auth.route('/callback')
+    
+@auth.route('/login/callback')
 def callback():
     # Get the authorization code from the query string
     code = request.args.get("code")
@@ -56,36 +47,42 @@ def callback():
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
 
-    # Recreate the OAuth2 session with the same redirect URI
-    redirect_uri = url_for('auth.callback', _external=True)
-    oauth = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        scope=["openid", "email", "profile"],
-        redirect_uri=redirect_uri  # Ensure the redirect URI matches
+    token_url, headers, body = client.prepare_token_request(
+    token_endpoint,
+    authorization_response=request.url,
+    redirect_url=request.base_url,
+    code=code
+    )
+    token_response = requests.post(
+        token_url,
+        headers=headers,
+        data=body,
+        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
     )
 
-    # Exchange the authorization code for an access token
-    token = oauth.fetch_token(
-        token_endpoint,
-        authorization_response=request.url,
-        client_secret=GOOGLE_CLIENT_SECRET,
-        redirect_uri=redirect_uri  # Explicitly include redirect_uri here too
-    )
+    # Parse the tokens!
+    client.parse_request_body_response(json.dumps(token_response.json()))
 
-    # Use the token to fetch user info
+    # Now that you have tokens (yay) let's find and hit the URL
+    # from Google that gives you the user's profile information,
+    # including their Google profile image and email
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    userinfo = oauth.get(userinfo_endpoint).json()
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
 
-    # Handle user info and login
-    if not userinfo.get("email_verified"):
-        return "Email not verified", 400
+    if userinfo_response.json().get("email_verified"):
+        email = userinfo_response.json()["email"]
+        pfp = userinfo_response.json()["picture"]
+        users_name = userinfo_response.json()["given_name"]
+    else:
+        return "User email not available or not verified by Google.", 400
 
-    user = User.query.filter_by(email=userinfo["email"]).first()
+    user = User.query.filter_by(email=userinfo_response["email"]).first()
     if not user:
         user = User(
-            email=userinfo["email"],
-            name=userinfo["given_name"],
-            pfp=userinfo["picture"],
+            email=email,
+            name=users_name,
+            pfp=pfp,
         )
         db.session.add(user)
         db.session.commit()
