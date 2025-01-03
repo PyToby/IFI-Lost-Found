@@ -13,9 +13,7 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
-# Define the OAuth2 session outside of a request
-oauth = OAuth2Session(GOOGLE_CLIENT_ID, scope=["openid", "email", "profile"])
-
+# Set up the OAuth2Session with redirect_uri
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -29,7 +27,14 @@ def login():
     # Build the redirect URL for the callback
     redirect_uri = url_for('auth.callback', _external=True)
 
-    # Manually prepare the authorization URL without explicitly passing the redirect_uri
+    # Create an OAuth2 session with the redirect URI
+    oauth = OAuth2Session(
+        GOOGLE_CLIENT_ID,
+        scope=["openid", "email", "profile"],
+        redirect_uri=redirect_uri  # Explicitly set the redirect URI here
+    )
+
+    # Generate the authorization URL
     authorization_url, state = oauth.authorization_url(authorization_endpoint)
 
     # Debug: Log the URL to check it's being generated properly
@@ -46,6 +51,14 @@ def callback():
     # Get Google's provider configuration to retrieve the token endpoint
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     token_endpoint = google_provider_cfg["token_endpoint"]
+
+    # Recreate the OAuth2 session with the same redirect URI
+    redirect_uri = url_for('auth.callback', _external=True)
+    oauth = OAuth2Session(
+        GOOGLE_CLIENT_ID,
+        scope=["openid", "email", "profile"],
+        redirect_uri=redirect_uri  # Ensure the redirect URI matches
+    )
 
     # Exchange the authorization code for an access token
     token = oauth.fetch_token(
