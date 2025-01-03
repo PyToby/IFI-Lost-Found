@@ -29,15 +29,16 @@ def login():
 
     # Create an OAuth2 session with the redirect URI
     oauth = OAuth2Session(
-    GOOGLE_CLIENT_ID, 
-    scope=[
-        "https://www.googleapis.com/auth/userinfo.profile", 
-        "https://www.googleapis.com/auth/userinfo.email", 
-        "openid"
-        ]
+        GOOGLE_CLIENT_ID, 
+        scope=[
+            "https://www.googleapis.com/auth/userinfo.profile", 
+            "https://www.googleapis.com/auth/userinfo.email", 
+            "openid"
+        ],
+        redirect_uri=redirect_uri  # Pass the redirect URI
     )
 
-    # Generate the authorization URL
+    # Generate the authorization URL with redirect_uri explicitly passed
     authorization_url, state = oauth.authorization_url(authorization_endpoint)
 
     # Debug: Log the URL to check it's being generated properly
@@ -68,7 +69,7 @@ def callback():
         token_endpoint,
         authorization_response=request.url,
         client_secret=GOOGLE_CLIENT_SECRET,
-        redirect_uri=redirect_uri  # Explicitly include redirect_uri
+        redirect_uri=redirect_uri  # Explicitly include redirect_uri here too
     )
 
     # Use the token to fetch user info
