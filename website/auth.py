@@ -29,9 +29,12 @@ def login():
 
     # Create an OAuth2 session with the redirect URI
     oauth = OAuth2Session(
-        GOOGLE_CLIENT_ID,
-        scope=["openid", "email", "profile"],
-        redirect_uri=redirect_uri  # Explicitly set the redirect URI here
+    GOOGLE_CLIENT_ID, 
+    scope=[
+        "https://www.googleapis.com/auth/userinfo.profile", 
+        "https://www.googleapis.com/auth/userinfo.email", 
+        "openid"
+        ]
     )
 
     # Generate the authorization URL
