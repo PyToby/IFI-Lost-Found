@@ -87,7 +87,7 @@ def callback():
         db.session.commit()
 
     login_user(user)
-    return redirect(url_for("views.home"))
+    return redirect(url_for("view.home"))
 
 @auth.route('/logout')
 def logout():
