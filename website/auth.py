@@ -67,7 +67,8 @@ def callback():
     token = oauth.fetch_token(
         token_endpoint,
         authorization_response=request.url,
-        client_secret=GOOGLE_CLIENT_SECRET
+        client_secret=GOOGLE_CLIENT_SECRET,
+        redirect_uri=redirect_uri  # Explicitly include redirect_uri
     )
 
     # Use the token to fetch user info
