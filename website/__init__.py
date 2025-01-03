@@ -2,11 +2,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from oauthlib.oauth2 import WebApplicationClient
-from .auth import GOOGLE_CLIENT_ID 
-from os import path
+import os
 
 db = SQLAlchemy()
 DB_NAME = 'database.db'
+
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 
 login_manager = LoginManager()
 
@@ -32,7 +33,7 @@ def create_app():
     return app
 
 def create_database(app):
-    if not path.exists('../../instance/' + DB_NAME):
+    if not os.path.exists('../../instance/' + DB_NAME):
         with app.app_context():
             db.create_all()
         print('Created database!')
