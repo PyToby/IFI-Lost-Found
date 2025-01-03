@@ -1,7 +1,6 @@
 from flask import Blueprint, redirect, request, url_for
 from flask_login import login_user, logout_user
-from requests_oauthlib import OAuth2Session
-from .__init__ import client
+from oauthlib.oauth2 import WebApplicationClient
 import os
 import requests
 import json
@@ -14,6 +13,9 @@ auth = Blueprint('auth', __name__)
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
+
+# OAuth 2 client setup
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
 # Set up the OAuth2Session with redirect_uri
 @login_manager.user_loader
