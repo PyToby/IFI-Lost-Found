@@ -5,7 +5,7 @@
     <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
     <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
     <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-    {% if not current_user.is_authenticated %}
+    {% if current_user.is_authenticated %}
     <!-- Profile Picture with Dropdown -->
     <div class="relative">
         <button id="profile-btn" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 focus:outline-none">
@@ -39,7 +39,7 @@
     <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
     <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
     <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-    {% if not current_user.is_authenticated %}
+    {% if current_user.is_authenticated %}
     <!-- Mobile Profile Picture and Dropdown -->
     <div class="block px-6 py-3 hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
         <button id="mobile-profile-toggle" class="flex items-center w-full">
