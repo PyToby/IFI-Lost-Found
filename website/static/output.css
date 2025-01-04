@@ -831,3 +831,14 @@ video {
   }
 }
 
+@media (min-width: 1024px) {
+  .lg\:mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .lg\:w-3\/5 {
+    width: 60%;
+  }
+}
+
