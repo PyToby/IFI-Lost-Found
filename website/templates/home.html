@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% block links %}
-    <a href="/" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
-    <a href="/about" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
-    <a href="/contact" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-{% if current_user.is_authenticated %}
-    <a href="/auth/logout" class="flex items-center">
-        <img 
-            src="{{ pfp }}" 
-            alt="Profile Picture" 
-            class="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-all duration-200"
-        >
-    </a>
-{% else %}
-    <a href="/auth/login" class="text-black hover:text-gray-500 transition-colors duration-200">Přihlásit</a>
-{% endif %}
+    <div class="hidden md:flex items-center space-x-8 text-l font-semibold">
+        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
+        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+        {% if current_user.is_authenticated %}
+            <a href="/auth/login" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 group">
+                Přihlásit
+            <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+            </a>
+        {% else %}
+            <a href="/auth/logout" class="flex items-center">
+                <img 
+                    src="{{ pfp }}" 
+                    alt="Profile Picture" 
+                    class="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-all duration-200"
+                >
+            </a>
+        {% endif %}
+    </div>
 {% endblock %}
 
 
