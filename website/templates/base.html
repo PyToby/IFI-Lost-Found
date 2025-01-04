@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="../static/output.css">
   <title>IFILAF</title>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-[#f9fdfe] to-[#d1edf3] lg:w-3/5 lg:mx-auto">
+<body class="min-h-screen bg-white lg:w-3/5 lg:mx-auto">
   <nav id="navbar" class="sticky top-0 z-50 transition-all duration-150 bg-transparent">
     <div class="flex items-center justify-between px-4 py-4 max-w-screen-lg mx-auto">
       <!-- Left: Logo -->
@@ -48,6 +48,7 @@
   </nav>
 
   <!-- Mobile menu -->
+   {% block mobile_menu %}
   <div id="mobile-menu" class="md:hidden hidden bg-white fixed inset-0 top-16 text-xl font-semibold">
     <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
     <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
@@ -59,7 +60,7 @@
       </svg>
     </a>
   </div>
-
+  {% endblock %}
   <div>
     {% block content %}
     {% endblock %}

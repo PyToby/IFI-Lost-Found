@@ -5,7 +5,7 @@
         <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
         <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
         {% if current_user.is_authenticated %}
-            <a href="/auth/logout" class="flex items-center">
+            <a href="/profil" class="flex items-center">
                 <img 
                     src="{{ pfp }}" 
                     alt="Profile Picture" 
@@ -23,10 +23,33 @@
     </div>
 {% endblock %}
 
+{% block mobile_menu %}
+<div id="mobile-menu" class="md:hidden hidden bg-white fixed inset-0 top-16 text-xl font-semibold">
+    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
+    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    {% if current_user.is_authenticated %}
+    <a href="/profil" class="flex items-center">
+        <img 
+            src="{{ pfp }}" 
+            alt="Profile Picture" 
+            class="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-all duration-200"
+        >
+    </a>
+    {% else %}    
+    <a href="/auth/login" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
+      Přihlásit
+      <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+      </svg>
+    </a>
+    {% endif %}
+</div>
+{% endblock %}
 
 {% block content %}
 {% if current_user.is_authenticated %}
-    <h1 class="text-black text-center font-bold text-3xl p-6">Vítej {{name}}! User ID: {{user_id}}</h1>
+    <h1 class="text-black text-center font-bold text-3xl p-6">Vítej {{ name }}! User ID: {{ user_id }}</h1>
 {% else %}
     <h1 class="text-black text-center font-bold text-3xl p-6">Vítej na této stránce! Přihlašte se!</h1>
 {% endif %}
