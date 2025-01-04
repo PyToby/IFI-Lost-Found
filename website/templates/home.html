@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block links %}
+    <a href="/" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
+    <a href="/about" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+    <a href="/contact" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+{% if current_user.is_authenticated %}
+    <a href="/auth/logout" class="flex items-center">
+        <img 
+            src="{{ pfp }}" 
+            alt="Profile Picture" 
+            class="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-gray-500 transition-all duration-200"
+        >
+    </a>
+{% else %}
+    <a href="/auth/login" class="text-black hover:text-gray-500 transition-colors duration-200">Přihlásit</a>
+{% endif %}
+{% endblock %}
+
+
+{% block content %}
+{% if current_user.is_authenticated %}
+    <h1 class="text-black text-center font-bold text-3xl p-6">Vítej {{name}}! User ID: {{user_id}}</h1>
+{% else %}
+    <h1 class="text-black text-center font-bold text-3xl p-6">Vítej na této stránce! Přihlašte se!</h1>
+{% endif %}
+{% endblock %}

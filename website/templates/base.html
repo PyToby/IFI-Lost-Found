@@ -6,13 +6,14 @@
   <link rel="stylesheet" href="../static/output.css">
   <title>IFILAF</title>
 </head>
-<body class="min-h-screen bg-gradient-to-b from-[#f9fdfe] to-[#d1edf3]">
+<body class="min-h-screen bg-gradient-to-b from-[#f9fdfe] to-[#d1edf3] w-3/5 mx-auto">
   <nav id="navbar" class="sticky top-0 z-50 transition-all duration-150 bg-transparent">
     <div class="flex items-center justify-between px-4 py-4 max-w-screen-lg mx-auto">
       <!-- Left: Logo -->
       <div class="text-xl font-bold text-black">IFILAF</div>
 
       <!-- Right: Links -->
+      {% block links %}
       <div class="hidden md:flex items-center space-x-8 text-l font-semibold">
         <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
         <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
@@ -24,6 +25,7 @@
           </svg>
         </a>
       </div>
+      {% endblock %}
 
       <!-- Hamburger for small screens -->
       <div class="md:hidden flex items-center">
