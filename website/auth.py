@@ -92,4 +92,4 @@ def callback():
 @auth.route('/logout')
 def logout():
     logout_user()
-    return redirect(url_for("views.home"))
+    return redirect(url_for("view.home"))
