@@ -29,3 +29,22 @@ window.addEventListener('scroll', () => {
         divider.classList.add('border-transparent');
     }
 });
+
+// Toggle dropdown menu on click (PC version)
+const profileButton = document.getElementById('profile-btn');
+const dropdownMenu = document.getElementById('dropdown-menu');
+
+profileButton.addEventListener('click', () => {
+    dropdownMenu.classList.toggle('hidden'); // Toggle visibility
+});
+
+// Mobile dropdown toggle
+const mobileToggleButton = document.getElementById('mobile-profile-toggle');
+const mobileDropdown = document.getElementById('mobile-dropdown');
+const mobileArrow = document.getElementById('mobile-arrow');
+
+mobileToggleButton.addEventListener('click', () => {
+    const isHidden = mobileDropdown.classList.contains('hidden');
+    mobileDropdown.classList.toggle('hidden', !isHidden);
+    mobileArrow.classList.toggle('rotate-180', isHidden);
+});
