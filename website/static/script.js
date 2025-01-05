@@ -1,17 +1,23 @@
 const hamburgerIcon = document.getElementById('hamburger-icon');
-const mobileMenu = document.getElementById('mobile-menu');
 const hamburger = document.getElementById('hamburger');
 const closeIcon = document.getElementById('close-icon');
+const mobileMenu = document.getElementById('mobile-menu');
+const content = document.getElementById('content');
 
 hamburgerIcon.addEventListener('click', () => {
-    // Toggle the visibility of the mobile menu
-    mobileMenu.classList.toggle('hidden');
-    
-    // Toggle between the hamburger icon and the close icon
-    hamburger.classList.toggle('hidden');
-    closeIcon.classList.toggle('hidden');
-});
+const isMenuHidden = mobileMenu.classList.contains('hidden');
 
+// Toggle menu visibility
+mobileMenu.classList.toggle('hidden', !isMenuHidden);
+mobileMenu.classList.toggle('block', isMenuHidden);
+
+// Toggle icon
+hamburger.classList.toggle('hidden', isMenuHidden);
+closeIcon.classList.toggle('hidden', !isMenuHidden);
+
+// Push content below menu
+content.style.marginTop = isMenuHidden ? `${mobileMenu.offsetHeight}px` : '0';
+});
 
 const navbar = document.getElementById('navbar');
 const divider = document.getElementById('divider');
