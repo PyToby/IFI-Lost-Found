@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify,Response
 from flask_login import current_user, login_required
-
 view = Blueprint('view', __name__)
 
 
@@ -21,3 +20,7 @@ def profil():
     name = request.args.get("name", current_user.name)
     pfp = request.args.get("pfp", current_user.pfp)
     return render_template('profile.html', name=name, pfp=pfp, user_id=user_id, current_user=current_user)
+
+@view.route("/goog",methods=["GET"])
+def goog():
+    return Response(status=200)
