@@ -2,13 +2,13 @@
 
 {% block links %}
 <div class="hidden md:flex items-center space-x-8 text-l font-semibold">
-    <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
-    <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
-    <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    <a href="#" class=" hover:text-gray-500 transition-colors duration-200">Domů</a>
+    <a href="#" class=" hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+    <a href="#" class=" hover:text-gray-500 transition-colors duration-200">Kontakt</a>
     {% if current_user.is_authenticated %}
     <!-- Profile Picture with Dropdown -->
     <div class="relative">
-        <button id="profile-btn" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 focus:outline-none">
+        <button id="profile-btn" class="flex items-center  hover:text-gray-500 transition-colors duration-200 focus:outline-none">
             <img 
                 src="{{ pfp }}" 
                 alt="Profile Picture" 
@@ -18,13 +18,13 @@
         <!-- Dropdown menu (hidden by default) -->
         <div id="dropdown-menu" class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden">
             <div class="py-1">
-                <a href="/profil" class="block px-4 py-2 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Nastavení</a>
-                <a href="/auth/logout" class="block px-4 py-2 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+                <a href="/profil" class="block px-4 py-2  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Nastavení</a>
+                <a href="/auth/logout" class="block px-4 py-2  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
             </div>
         </div>
     </div>
     {% else %}
-        <a href="/auth/login" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 group">
+        <a href="/auth/login" class="flex items-center  hover:text-gray-500 transition-colors duration-200 group">
             Přihlásit
             <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
@@ -36,9 +36,9 @@
 
 {% block mobile_menu %}
 <div id="mobile-menu" class="md:hidden hidden bg-white fixed inset-0 top-16 text-xl font-semibold">
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
+    <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+    <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
     {% if current_user.is_authenticated %}
     <!-- Mobile Profile Picture and Dropdown -->
     <div class="block px-6 py-3 hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
@@ -54,12 +54,12 @@
         </button>
         <!-- Mobile Dropdown -->
         <div id="mobile-dropdown" class="hidden mt-2 space-y-1">
-            <a href="/profil" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Nastavení</a>
-            <a href="/auth/logout" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+            <a href="/profil" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Nastavení</a>
+            <a href="/auth/logout" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
         </div>
     </div>
     {% else %}
-        <a href="/auth/login" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
+        <a href="/auth/login" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
             Přihlásit
             <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
@@ -72,9 +72,9 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
-    <h1 class="text-black text-center font-bold text-3xl p-6">Vítej {{ name }}! User ID: {{ user_id }}</h1>
+    <h1 class=" text-center font-bold text-3xl p-6">Vítej {{ name }}! User ID: {{ user_id }}</h1>
 {% else %}
-    <h1 class="text-black text-center font-bold text-3xl p-6">Vítejte na této stránce! Pro editaci obsahu se přihlaste!</h1>
+    <h1 class=" text-center font-bold text-3xl p-6">Vítejte na této stránce! Pro editaci obsahu se přihlaste!</h1>
 {% endif %}
 
 {% for preview in [
@@ -100,7 +100,7 @@
 %}
 
 
-<div class="flex items-center bg-blue-100 rounded-xl mx-4 mb-3">
+<div class="flex items-center bg-blue-100 dark:bg-neutral-900 rounded-xl mx-4 mb-3">
       <img src="{{preview.image}}" class="h-[100px] md:h-[10vh] max-w-[30vw] md:max-w-[20vw] m-4 object-contain rounded-xl ">
     <div class="ml-3 justify-center md:mx-6 lg:ml-10 xl:ml-14 line-clamp-5 sm:line-clamp-4">
       <strong>{{preview.title}}</strong>
