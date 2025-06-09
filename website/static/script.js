@@ -29,19 +29,15 @@ window.addEventListener('scroll', () => {
         if (document.documentElement.classList.contains('dark')){
             navbar.classList.remove('bg-transparent');
             navbar.classList.add('bg-neutral-800', 'shadow-sm');
-            divider.classList.remove('border-transparent');
         }
         else{
             navbar.classList.remove('bg-transparent');
             navbar.classList.add('bg-white', 'shadow-sm');
-            divider.classList.remove('border-transparent');
         }
         
     } else {
         navbar.classList.remove('bg-white', 'shadow-sm');
         navbar.classList.add('bg-transparent');
-        divider.classList.remove('border-gray-200');
-        divider.classList.add('border-transparent');
     }
 });
 
