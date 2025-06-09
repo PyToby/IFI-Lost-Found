@@ -24,3 +24,7 @@ def profil():
 @view.route("/goog",methods=["GET"])
 def goog():
     return Response(status=200)
+
+@view.route('/info')
+def info():
+    return render_template('info.html', current_user=current_user)
