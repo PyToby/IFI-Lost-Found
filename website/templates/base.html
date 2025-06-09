@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="cz">
+<html lang="cz" class="">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,10 +67,33 @@
     {% block content %}
     {% endblock %}
   </div>
-  <button id="darkModeToggle"
+  <button id="darkModeToggle" 
   class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-gray-800 dark:bg-white text-white dark:text-gray-800 flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200">
   🌓
 </button>
+
+<script>
+  const darkModeToggle = document.getElementById('darkModeToggle');
+
+  // Load saved theme or system preference
+  if (
+    localStorage.theme === 'dark' ||
+    (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+
+  // Toggle dark mode and update localStorage
+  darkModeToggle.addEventListener('click', () => {
+    console.log('Dark mode toggle clicked');
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    localStorage.theme = isDark ? 'dark' : 'light';
+  });
+</script>
+
 </body>
 <script src="../static/script.js"></script>
 <script src="../static/request_template.js"></script>
