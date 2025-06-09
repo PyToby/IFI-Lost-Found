@@ -100,16 +100,20 @@
 %}
 
 
-<div class="flex items-center bg-blue-100 dark:bg-neutral-900 rounded-xl mx-4 mb-3">
-      <img src="{{preview.image}}" class="h-[100px] md:h-[10vh] max-w-[30vw] md:max-w-[20vw] m-4 object-contain rounded-xl ">
-    <div class="ml-3 justify-center md:mx-6 lg:ml-10 xl:ml-14 line-clamp-5 sm:line-clamp-4">
-      <strong>{{preview.title}}</strong>
-      <p class="dark:text-gray-400">
-        {{preview.info}}
-      </p>
+<div class="flex items-center bg-blue-100 dark:bg-neutral-800 rounded-2xl mx-4 mb-3 overflow-hidden h-[120px]">
+    <!-- Image -->
+    <div class="basis-1/2 h-full flex items-center justify-center p-2">
+        <img src="{{preview.image}}" class="h-[100px] object-contain rounded-xl max-w-full">
     </div>
-    <div class="flex-grow"></div>
-    <div class="mx-3 justify-right md:mx-6 lg:mx-10 xl:mx-14">
+    
+    <!-- Text -->
+    <div class="basis-3/5 h-full flex flex-col justify-center overflow-hidden px-3">
+        <strong class="truncate">{{preview.title}}</strong>
+        <p class="dark:text-gray-400 text-sm line-clamp-3 overflow-hidden">{{preview.info}}</p>
+    </div>
+    
+    <!-- Date -->
+    <div class="basis-1/4 h-full flex items-center justify-end px-3 text-sm text-right">
         {{preview.date}}
     </div>
 </div>

@@ -54,3 +54,22 @@ mobileToggleButton.addEventListener('click', () => {
     mobileDropdown.classList.toggle('hidden', !isHidden);
     mobileArrow.classList.toggle('rotate-180', isHidden);
 });
+
+const darkModeToggle = document.getElementById('darkModeToggle');
+const body = document.body;
+
+// On page load, set dark mode based on saved preference or system preference
+if (
+  localStorage.theme === 'dark' ||
+  (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+) {
+  body.classList.add('dark');
+} else {
+  body.classList.remove('dark');
+}
+
+// Toggle dark mode on click
+darkModeToggle.addEventListener('click', () => {
+  body.classList.toggle('dark');
+  localStorage.theme = body.classList.contains('dark') ? 'dark' : 'light';
+});

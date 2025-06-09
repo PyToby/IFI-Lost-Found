@@ -6,11 +6,11 @@
   <link rel="stylesheet" href="../static/output.css">
   <title>IFILAF</title>
 </head>
-<body class="min-h-screen bg-white dark:bg-neutral-950 text-black dark:text-gray-200 lg:w-3/4 xl:w-3/5 lg:mx-auto">
+<body class="min-h-screen bg-white dark:bg-neutral-900 dark:text-gray-200 lg:w-3/4 xl:w-4/6 lg:mx-auto">
   <nav id="navbar" class="sticky top-0 z-50 transition-all duration-150 bg-transparent ">
     <div class="flex items-center justify-between px-4 py-4 max-w-screen-lg mx-auto">
       <!-- Left: Logo -->
-      <div class="text-xl font-bold ">
+      <div class="text-xl font-bold">
         <a href="/">IFILAF</a>
       </div>
 
@@ -67,6 +67,10 @@
     {% block content %}
     {% endblock %}
   </div>
+  <button id="darkModeToggle"
+  class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-gray-800 dark:bg-white text-white dark:text-gray-800 flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200">
+  🌓
+</button>
 </body>
 <script src="../static/script.js"></script>
 <script src="../static/request_template.js"></script>
