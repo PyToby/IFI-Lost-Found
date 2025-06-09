@@ -1,5 +1,103 @@
 {% extends "base.html" %}
+
+{% block links %}
+<div class="hidden md:flex items-center space-x-8 text-l font-semibold">
+    <a href="#" class=" hover:text-gray-500 transition-colors duration-200">Domů</a>
+    
+    <!--info.html-->
+    <a href="{{ url_for('view.info') }}" class="hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+
+    <a href="#" class=" hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    {% if current_user.is_authenticated %}
+    <!-- Profile Picture with Dropdown -->
+    <div class="relative">
+        <button id="profile-btn" class="flex items-center  hover:text-gray-500 transition-colors duration-200 focus:outline-none">
+            <img 
+                src="{{ pfp }}" 
+                alt="Profile Picture" 
+                class="w-9 h-9 rounded-full"
+            >
+        </button>
+        <!-- Dropdown menu (hidden by default) -->
+        <div id="dropdown-menu" class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden">
+            <div class="py-1">
+                <a href="/profil" class="block px-4 py-2  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Nastavení</a>
+                <a href="/auth/logout" class="block px-4 py-2  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <a href="/auth/login" class="flex items-center  hover:text-gray-500 transition-colors duration-200 group">
+            Přihlásit
+            <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block mobile_menu %}
+<div id="mobile-menu" class="md:hidden hidden bg-white fixed inset-0 top-16 text-xl font-semibold">
+    <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
+    <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+    
+    <!--info.html-->
+    <a href="{{ url_for('view.info') }}" class="hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+
+    <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    {% if current_user.is_authenticated %}
+    <!-- Mobile Profile Picture and Dropdown -->
+    <div class="block px-6 py-3 hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
+        <button id="mobile-profile-toggle" class="flex items-center w-full">
+            <img 
+                src="{{ pfp }}" 
+                alt="Profile Picture" 
+                class="w-8 h-8 rounded-full mr-2"
+            >
+            <svg id="mobile-arrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </button>
+        <!-- Mobile Dropdown -->
+        <div id="mobile-dropdown" class="hidden mt-2 space-y-1">
+            <a href="/profil" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Nastavení</a>
+            <a href="/auth/logout" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+        </div>
+    </div>
+    {% else %}
+        <a href="/auth/login" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
+            Přihlásit
+            <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+
 {% block content %}
-<h1 class="text-2xl font-bold p-4">O Projektu</h1>
-<p class="p-4">Toto je stránka s informacemi o projektu.</p>
+<div class="max-w-4xl mx-auto p-7">
+    <h1 class="text-3xl font-bold mb-4">O Projektu</h1>
+    <br><br>
+    <p class="text-lg leading-relaxed">
+        1. Tento projekt je zaměřený na evidenci ztrát a nálezů.  
+        <br><br>
+        2. Cílem projektu je zamezit zahlcování školního e-mailu.  
+        <br><br>
+        3. Systém umožňuje rychlé zveřejnění nálezu nebo ztráty, správu profilů uživatelů a jednoduchou komunikaci mezi uživateli.  
+        <br><br>
+        4. Zveřejněné ztráty a nálezy mohou smazat sami uživatelé, pokud jejich předmět našel majitele nebo byl nalezen nálezce majitelova předmětu.  
+        <br><br>
+        5. Pokud se tak nestane, budou položky automaticky mazány 1. 9. dalšího školního roku.  
+        <br><br>
+        6a. Pro zobrazení nálezů a zadání ztrát do systému je nutné se přihlásit pomocí školních přihlašovacích údajů.  
+        <br><br>
+        6b. To zajišťuje, že se u zadaných předmětů nezobrazují veřejně kontaktní údaje studentů.
+        <br><br>
+        -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Studenti Tercie 2024/25
+    </p>
+</div>
 {% endblock %}
