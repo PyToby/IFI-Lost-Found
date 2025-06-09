@@ -26,10 +26,17 @@ const divider = document.getElementById('divider');
 
 window.addEventListener('scroll', () => {
     if (window.scrollY > 0) {
-        navbar.classList.remove('bg-transparent');
-        navbar.classList.add('bg-white', 'shadow-sm');
-        divider.classList.remove('border-transparent');
-        divider.classList.add('border-gray-200');
+        if (document.documentElement.classList.contains('dark')){
+            navbar.classList.remove('bg-transparent');
+            navbar.classList.add('bg-neutral-800', 'shadow-sm');
+            divider.classList.remove('border-transparent');
+        }
+        else{
+            navbar.classList.remove('bg-transparent');
+            navbar.classList.add('bg-white', 'shadow-sm');
+            divider.classList.remove('border-transparent');
+        }
+        
     } else {
         navbar.classList.remove('bg-white', 'shadow-sm');
         navbar.classList.add('bg-transparent');

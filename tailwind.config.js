@@ -6,5 +6,8 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+  safelist: [
+    'bg-neutral-800',
+  ],
 }
 
