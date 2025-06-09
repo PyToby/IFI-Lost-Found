@@ -40,10 +40,9 @@
 {% block mobile_menu %}
 <div id="mobile-menu" class="md:hidden hidden bg-white fixed inset-0 top-16 text-xl font-semibold">
     <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
-    <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
     
     <!--info.html-->
-    <a href="{{ url_for('view.info') }}" class="hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+    <a href="{{ url_for('view.info') }}" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
 
     <a href="#" class="block px-6 py-3  hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
     {% if current_user.is_authenticated %}
