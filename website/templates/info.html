@@ -79,25 +79,88 @@
 
 
 {% block content %}
-<div class="max-w-4xl mx-auto p-7">
-    <h1 class="px-6 text-3xl font-bold mb-4">O Projektu</h1>
+<div class="py-10 sm:py-10">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl lg:text-center">
+      <p class="mt-2 text-4xl font-semibold tracking-tight text-pretty sm:text-5xl lg:text-balance">O Projektu</p>
+      <p class="mt-6 text-lg/8">Tento projekt je zaměřený na evidenci ztrát a nálezů,</p>
+      <p class="mt-0 text-lg/8">cílem projektu je zamezit zahlcování školního e-mailu</p>
+    </div>
+    <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+      <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="7" width="14" height="10" rx="2" ry="2" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle cx="17.5" cy="16.5" r="3" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="19.5" y1="18.5" x2="22" y2="21" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+            Nahlašování ztracených předmětů
+          </dt>
+          <dd class="mt-2 text-base/7">Uživatelé mohou snadno přidat podrobný popis a fotografie ztracených předmětů, aby ostatním pomohli je rychleji najít.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="7" width="14" height="10" rx="2" ry="2" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle cx="17.5" cy="16.5" r="3" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="19.5" y1="18.5" x2="22" y2="21" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+            Nahlašování nalezených předmětů
+          </dt>
+          <dd class="mt-2 text-base/7">Jednoduše nahlašte nalezené věci s popisem a fotkou, aby si majitel mohl své věci snadno vyzvednout.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 4h18l-7 8v6l-4-3v-3L3 4z" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle cx="17" cy="17" r="3" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="19.5" y1="19.5" x2="22" y2="22" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+
+            </div>
+            Vyhledávání a filtrování
+          </dt>
+          <dd class="mt-2 text-base/7">Rychle najděte konkrétní ztracené nebo nalezené věci díky filtrování podle kategorie, místa a data.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6l7-4z" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M9 12l2 2 4-4" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+
+            </div>
+            Bezpečné přihlášení
+          </dt>
+          <dd class="mt-2 text-base/7">Bezpečné přihlášení pomocí vašeho školního e-mailu domény gjk.cz, které chrání vaše údaje.</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto p-7">
+    <h1 class="px-1 text-3xl font-bold mb-4">(TEMPORARY) Podmínku použití</h1>
     <br><br>
-    <p class="px-6 text-lg leading-relaxed">
-        1. Tento projekt je zaměřený na evidenci ztrát a nálezů.  
+    <p class="px-2 text-lg leading-relaxed">
+        1. Zveřejněné ztráty a nálezy mohou smazat sami uživatelé, pokud jejich předmět našel majitele nebo byl nalezen nálezce majitelova předmětu.  
         <br><br>
-        2. Cílem projektu je zamezit zahlcování školního e-mailu.  
+        2. Pokud se tak nestane, budou položky automaticky mazány 1. 9. dalšího školního roku.  
         <br><br>
-        3. Systém umožňuje rychlé zveřejnění nálezu nebo ztráty, správu profilů uživatelů a jednoduchou komunikaci mezi uživateli.  
+        3a. Pro zobrazení nálezů a zadání ztrát do systému je nutné se přihlásit pomocí školních přihlašovacích údajů.  
         <br><br>
-        4. Zveřejněné ztráty a nálezy mohou smazat sami uživatelé, pokud jejich předmět našel majitele nebo byl nalezen nálezce majitelova předmětu.  
-        <br><br>
-        5. Pokud se tak nestane, budou položky automaticky mazány 1. 9. dalšího školního roku.  
-        <br><br>
-        6a. Pro zobrazení nálezů a zadání ztrát do systému je nutné se přihlásit pomocí školních přihlašovacích údajů.  
-        <br><br>
-        6b. To zajišťuje, že se u zadaných předmětů nezobrazují veřejně kontaktní údaje studentů.
+        3b. To zajišťuje, že se u zadaných předmětů nezobrazují veřejně kontaktní údaje studentů.
         <br><br>
         -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Studenti Tercie 2024/25
     </p>
 </div>
+
+
 {% endblock %}
