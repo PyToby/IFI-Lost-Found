@@ -7,19 +7,27 @@ const mobileMenu = document.getElementById('mobile-menu');
 const content = document.getElementById('content');
 
 hamburgerIcon.addEventListener('click', () => {
-const isMenuHidden = mobileMenu.classList.contains('hidden');
+  const isMenuHidden = mobileMenu.classList.contains('hidden');
 
-// Toggle menu visibility
-mobileMenu.classList.toggle('hidden', !isMenuHidden);
-mobileMenu.classList.toggle('block', isMenuHidden);
+  // Toggle menu visibility
+  mobileMenu.classList.toggle('hidden', !isMenuHidden);
+  mobileMenu.classList.toggle('block', isMenuHidden);
 
-// Toggle icon
-hamburger.classList.toggle('hidden', isMenuHidden);
-closeIcon.classList.toggle('hidden', !isMenuHidden);
+  // Toggle icon
+  hamburger.classList.toggle('hidden', isMenuHidden);
+  closeIcon.classList.toggle('hidden', !isMenuHidden);
 
-// Push content below menu
-content.style.marginTop = isMenuHidden ? `${mobileMenu.offsetHeight}px` : '0';
+  // Push content below menu
+  content.style.marginTop = isMenuHidden ? `${mobileMenu.offsetHeight}px` : '0';
+
+  // Disable/enable scroll on body when menu is open/closed
+  if (isMenuHidden) {
+    document.body.style.overflow = 'hidden'; // Disable scroll
+  } else {
+    document.body.style.overflow = ''; // Enable scroll (reset to default)
+  }
 });
+
 
 const navbar = document.getElementById('navbar');
 const divider = document.getElementById('divider');
