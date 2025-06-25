@@ -32,6 +32,7 @@ hamburgerIcon.addEventListener('click', () => {
 const navbar = document.getElementById('navbar');
 const divider = document.getElementById('divider');
 
+
 window.addEventListener('scroll', () => {
     if (window.scrollY > 0) {
         if (document.documentElement.classList.contains('dark')){
