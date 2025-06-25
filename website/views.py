@@ -73,7 +73,7 @@ test_items=[
     }
         ]
 
-
+ITEMS_PER_RELOAD = 5
 
 @view.route('/')
 def home():
@@ -87,9 +87,9 @@ def home():
         user_id = request.args.get("user_id", current_user.id)
         name = request.args.get("name", current_user.name)
         pfp = request.args.get("pfp", current_user.pfp)
-        return render_template('home.html', user_id=user_id, name=name, pfp=pfp, current_user=current_user,test_items=test_items[0:5],more_items_available=more_items_available)
+        return render_template('home.html', user_id=user_id, name=name, pfp=pfp, current_user=current_user,test_items=test_items[0:ITEMS_PER_RELOAD],more_items_available=more_items_available)
     else:
-        return render_template('home.html', current_user=current_user,test_items=test_items[0:5],more_items_available=more_items_available)
+        return render_template('home.html', current_user=current_user,test_items=test_items[0:ITEMS_PER_RELOAD],more_items_available=more_items_available)
 
 @login_required
 @view.route('/profil')
@@ -106,10 +106,10 @@ def info():
 
 @view.route("load_next_items")
 def load_next_items():
-    session["test_items_index"] += 5
+    session["test_items_index"] += ITEMS_PER_RELOAD
     test_items_index = session["test_items_index"]
     more_items_available=True
-    if test_items_index+5 >= len(test_items):
+    if test_items_index+ITEMS_PER_RELOAD >= len(test_items):
         more_items_available=False
 
-    return render_template("preview_list.html",test_items=test_items[test_items_index:test_items_index+5],more_items_available=more_items_available)
+    return render_template("preview_list.html",test_items=test_items[test_items_index:test_items_index+ITEMS_PER_RELOAD],more_items_available=more_items_available)
