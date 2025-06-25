@@ -73,14 +73,14 @@ test_items=[
     }
         ]
 
-ITEMS_PER_RELOAD = 5
+ITEMS_PER_RELOAD = 7
 
 @view.route('/')
 def home():
     session["test_items_index"] = 0
 
     more_items_available=True
-    if len(test_items) <=5:
+    if len(test_items) <=ITEMS_PER_RELOAD:
         more_items_available=False
 
     if current_user.is_authenticated:
