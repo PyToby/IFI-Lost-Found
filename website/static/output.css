@@ -1237,6 +1237,10 @@ video {
     margin-bottom: 5rem;
   }
 
+  .lg\:mt-10 {
+    margin-top: 2.5rem;
+  }
+
   .lg\:w-3\/4 {
     width: 75%;
   }
