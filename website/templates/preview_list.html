@@ -22,10 +22,8 @@
 
 {% if more_items_available %}
     <div id="next_items">
-    <br>
-    <br>
     <div class="justify-center flex">
-        <button class="p-3 md:px-5 bg-blue-400 rounded-lg dark:bg-indigo-700" hx-get="load_next_items" hx-target="#next_items" hx-swap="outerHTML">načíst další položky</button>
+        <button class="p-3 md:px-5 mt-5 md:mt-10 bg-blue-400 rounded-lg dark:bg-indigo-700" hx-get="load_next_items" hx-target="#next_items" hx-swap="outerHTML">načíst další položky</button>
     </div>
     <div>
 {% endif %}
