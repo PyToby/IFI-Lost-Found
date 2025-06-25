@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from oauthlib.oauth2 import WebApplicationClient
@@ -13,7 +13,7 @@ login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'nvmkcemutoje' #:)) hej, možná to zjistit??
+    app.config['SECRET_KEY'] = 'mam_chut_te_zabit_ale_uz_to_prechazi_mas_stesti'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
 
     db.init_app(app)

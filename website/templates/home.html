@@ -83,48 +83,9 @@
     <h1 class=" text-center font-bold text-3xl p-6">Vítejte na této stránce! Pro editaci obsahu se přihlaste!</h1>
 {% endif %}
 
-{% for preview in [
-    {
-        "image":"https://upload.wikimedia.org/wikipedia/en/8/8c/Woods_4_Green_Album_Cover_Art.jpg",
-        "title":"Death is not the end",
-        "info":"It's a new experience\n
-        --DSBM",
-        "date":"11.12. 2010"},
-    {
-        "image":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/ApplePencilPro.png/640px-ApplePencilPro.png",
-        "title":"Tužka",
-        "info":"Značky Jablko. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla pulvinar eleifend sem. Donec ipsum massa, ullamcorper in, auctor et, scelerisque sed, est. Etiam sapien elit, consequat eget, tristique non, venenatis quis, ante. Nunc dapibus tortor vel mi dapibus sollicitudin. Aenean vel massa quis mauris vehicula lacinia. Nulla est. In laoreet, magna id viverra tincidunt, sem odio bibendum justo, vel imperdiet sapien wisi sed libero. Integer imperdiet lectus quis justo. Sed convallis magna eu sem. Praesent vitae arcu tempor neque lacinia pretium. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Integer vulputate sem a nibh rutrum consequat. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos.",
-        "date":"31.2. 1969"
-    },
-    {
-        "image":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Tape_Measure_Massband_10_cm.svg/640px-Tape_Measure_Massband_10_cm.svg.png",
-        "title":"Metr",
-        "info":"""Mé délky. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nulla pulvinar eleifend sem. Donec ipsum massa, ullamcorper in, auctor et, scelerisque sed, est. Etiam sapien elit, consequat eget, tristique non, venenatis quis, ante. Nunc dapibus tortor vel mi dapibus sollicitudin. Aenean vel massa quis mauris vehicula lacinia. Nulla est. In laoreet, magna id viverra tincidunt, sem odio bibendum justo, vel imperdiet sapien wisi sed libero. Integer imperdiet lectus quis justo. Sed convallis magna eu sem. Praesent vitae arcu tempor neque lacinia pretium. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat. Integer vulputate sem a nibh rutrum consequat. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos.""",
-        "date":"-4.13. 2099"
-    }
-        ]
-%}
+{% include "preview_list.html" %}
 
 
-<div class="flex items-center bg-blue-100 dark:bg-neutral-800 rounded-2xl mx-4 mb-3 overflow-hidden h-[120px]">
-    <!-- Image -->
-    <div class="basis-1/2 h-full flex items-center justify-center p-2">
-        <img src="{{preview.image}}" class="h-[100px] object-contain rounded-xl max-w-full">
-    </div>
-    
-    <!-- Text -->
-    <div class="basis-3/5 h-full flex flex-col justify-center overflow-hidden px-3">
-        <strong class="truncate">{{preview.title}}</strong>
-        <p class="dark:text-gray-400 text-sm line-clamp-3 overflow-hidden">{{preview.info}}</p>
-    </div>
-    
-    <!-- Date -->
-    <div class="basis-1/4 h-full flex items-center justify-end px-3 text-sm text-right">
-        {{preview.date}}
-    </div>
-</div>
-
-{% endfor %}
 
 {% endblock %}
 

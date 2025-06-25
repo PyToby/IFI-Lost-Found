@@ -10,4 +10,3 @@ module.exports = {
     'bg-neutral-800',
   ],
 }
-
