@@ -113,3 +113,7 @@ def load_next_items():
         more_items_available=False
 
     return render_template("preview_list.html",test_items=test_items[test_items_index:test_items_index+ITEMS_PER_RELOAD],more_items_available=more_items_available)
+
+@view.route('/access-denied')
+def access_denied():
+    return render_template('access-denied.html')
