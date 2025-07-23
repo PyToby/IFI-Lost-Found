@@ -79,8 +79,9 @@ def callback():
     # Only allow emails from gjk.cz
     allowed_domain = "gjk.cz"  
     if not email.lower().endswith(f"@{allowed_domain}"):
-        return f"Access denied: only {allowed_domain} emails are allowed. Please use a {allowed_domain} to login to IFILAF.", 403
-
+        #return f"Access denied: only {allowed_domain} emails are allowed. Please use a {allowed_domain} to login to IFILAF.", 403
+        return redirect(url_for("view.access_denied"))
+    
     user = User.query.filter_by(email=email).first()
     if not user:
         user = User(
