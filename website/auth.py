@@ -10,6 +10,7 @@ from . import db, login_manager
 
 auth = Blueprint('auth', __name__)
 
+ADMIN_EMAILS = os.getenv('ADMIN_EMAILS', '').split(',')
 GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
@@ -88,9 +89,12 @@ def callback():
             email=email,
             name=users_name,
             pfp=pfp,
+            is_admin=(email in ADMIN_EMAILS)
         )
         db.session.add(user)
         db.session.commit()
+    else:
+        user.is_admin = email in ADMIN_EMAILS
 
     login_user(user)
     return redirect(url_for("view.home", user_id=user.id, name=user.name))
