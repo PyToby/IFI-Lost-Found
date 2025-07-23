@@ -76,7 +76,12 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    user = User.query.filter_by(email=userinfo_response.json()["email"]).first()
+    # Only allow emails from gjk.cz
+    allowed_domain = "gjk.cz"  
+    if not email.lower().endswith(f"@{allowed_domain}"):
+        return f"Access denied: only {allowed_domain} emails are allowed. Please use a {allowed_domain} to login to IFILAF.", 403
+
+    user = User.query.filter_by(email=email).first()
     if not user:
         user = User(
             email=email,
