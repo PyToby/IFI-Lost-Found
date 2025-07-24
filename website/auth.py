@@ -16,6 +16,13 @@ GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
+# Make sure logs/ directory exists — works locally and on Render
+log_dir = os.path.join(os.getcwd(), 'logs')
+os.makedirs(log_dir, exist_ok=True)
+
+# Set up logging
+log_path = os.path.join(log_dir, 'app.log')
+
 logging.basicConfig(
     filename='/logs/app.log',
     level=logging.INFO,
