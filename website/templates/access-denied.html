@@ -9,13 +9,13 @@
     </head>
     
     <body class="flex flex-col justify-center items-center min-h-screen margin-bottom-20 bg-white dark:bg-neutral-900 dark:text-gray-200">
-        {% if action == 'unauthorized_domain' %}
+        {% if error == 'unauthorized_domain' %}
             <h1 class="text-center text-2xl font-bold mt-10">Přístup odepřen</h1>
             <p class="text-center text-lg mt-4">Tento obsah je dostupný pouze pro uživatele s e-mailovou adresou <strong>gjk.cz</strong>.</p>
             <p class="text-center text-lg mt-4">Pokud máte platnou e-mailovou adresu <strong>gjk.cz</strong>, prosím přihlaste se.</p>
             <a href="/auth/login" class="mt-2 px-4 py-2 transition-colors duration-200 hover:text-gray-500 dark:text-white underline decoration-dashed">Přihlásit se</a>
 
-        {% elif action == 'email_not_verified' %}
+        {% elif error == 'email_not_verified' %}
             <h1 class="text-center text-2xl font-bold mt-10">Používaný uživatelský účet je neaktivní</h1>
             <p class="text-center text-lg mt-4">Použitý účet <strong>gjk.cz</strong> nemusí být platný nebo aktivní nebo může být omezen zásadami.</p>
             <p class="text-center text-lg mt-4">Zkuste to prosím později</p>
