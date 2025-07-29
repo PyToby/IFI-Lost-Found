@@ -79,14 +79,14 @@ def callback():
         users_name = userinfo_response.json()["given_name"]
     else:
         logging.warning("Unverified email attempted login: %s", email)
-        return redirect(url_for("auth.access_denied", action='email_not_verified'))
+        return redirect(url_for("auth.access_denied", error='email_not_verified'))
 
     # Only allow emails from gjk.cz
     allowed_domain = "gjk.cz"  
     if not email.lower().endswith(f"@{allowed_domain}"):
         #return f"Access denied: only {allowed_domain} emails are allowed. Please use a {allowed_domain} to login to IFILAF.", 403
         logging.warning("Unauthorized domain: %s tried to login", email)
-        return redirect(url_for("auth.access_denied", action='unauthorized_domain'))
+        return redirect(url_for("auth.access_denied", error='unauthorized_domain'))
     
     user = User.query.filter_by(email=email).first()
     if not user:
@@ -114,4 +114,5 @@ def logout():
 
 @auth.route('/access-denied')
 def access_denied():
-    return render_template('access-denied.html', action='none')
+    error = request.args.get('error', 'none')
+    return render_template('access-denied.html', error=error)
