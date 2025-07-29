@@ -72,6 +72,8 @@ def callback():
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
     uri, headers, body = client.add_token(userinfo_endpoint)
     userinfo_response = requests.get(uri, headers=headers, data=body)
+    userinfo = userinfo_response.json()
+    email = userinfo.get("email")
 
     if userinfo_response.json().get("email_verified"):
         email = userinfo_response.json()["email"]
