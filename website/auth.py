@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, request, url_for
+from flask import Blueprint, redirect, request, url_for, render_template
 from flask_login import login_user, logout_user, current_user
 from oauthlib.oauth2 import WebApplicationClient
 import os
@@ -79,14 +79,14 @@ def callback():
         users_name = userinfo_response.json()["given_name"]
     else:
         logging.warning("Unverified email attempted login: %s", email)
-        return "User email not available or not verified by Google.", 400
+        return redirect(url_for("auth.access_denied", action='email_not_verified'))
 
     # Only allow emails from gjk.cz
     allowed_domain = "gjk.cz"  
     if not email.lower().endswith(f"@{allowed_domain}"):
         #return f"Access denied: only {allowed_domain} emails are allowed. Please use a {allowed_domain} to login to IFILAF.", 403
         logging.warning("Unauthorized domain: %s tried to login", email)
-        return redirect(url_for("view.access_denied"))
+        return redirect(url_for("auth.access_denied", action='unauthorized_domain'))
     
     user = User.query.filter_by(email=email).first()
     if not user:
@@ -110,3 +110,8 @@ def logout():
     logging.info("User logged out: %s", getattr(current_user, 'email', 'unknown'))
     logout_user()
     return redirect(url_for("view.home"))
+
+
+@auth.route('/access-denied')
+def access_denied():
+    return render_template('access-denied.html', action='none')

@@ -3,16 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from oauthlib.oauth2 import WebApplicationClient
 import os
+import sys
 import logging
 
 # --- Logging Setup ---
-LOG_DIR = os.path.join(os.path.dirname(__file__), 'logs')
-os.makedirs(LOG_DIR, exist_ok=True)
-
-LOG_FILE = os.path.join(LOG_DIR, 'app.log')
-
 logging.basicConfig(
-    filename=LOG_FILE,
+    stream=sys.stdout,
     level=logging.INFO,
     format='[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
 )
