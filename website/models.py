@@ -8,4 +8,4 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     name = db.Column(db.String(150), nullable=False)
     pfp = db.Column(db.String(300))
-    is_admin = db.Column(db.Boolean, default=False)
+    #is_admin = db.Column(db.Boolean, default=False)

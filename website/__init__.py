@@ -49,6 +49,5 @@ def create_database(app):
     db_path = os.path.join(app.instance_path, DB_NAME)
     if not os.path.exists(db_path):
         with app.app_context():
-            db.drop_all()
             db.create_all()
         print('Created database!')
