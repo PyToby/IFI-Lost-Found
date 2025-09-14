@@ -11,8 +11,9 @@ from . import db, login_manager
 
 auth = Blueprint('auth', __name__)
 
+
 #ADMIN_EMAILS = os.getenv('ADMIN_EMAILS', '').split(',')
-GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+'''GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
@@ -118,4 +119,60 @@ def logout():
 @auth.route('/access-denied')
 def access_denied():
     error = request.args.get('error', 'none')
+    return render_template('access-denied.html', error=error)'''
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@auth.route('/login')
+def login():
+    logging.info("Test login initiated from IP: %s", getattr(request, 'remote_addr', 'unknown'))
+    return redirect(url_for('auth.callback'))
+
+@auth.route('/login/callback')
+def callback():
+    logging.info("Test callback invoked")
+
+
+    mock_userinfo = {
+        "email": "testuser@gjk.cz",
+        "email_verified": True,
+        "given_name": "Test",
+        "picture": "https://via.placeholder.com/150"
+    }
+
+    email = mock_userinfo["email"]
+    users_name = mock_userinfo["given_name"]
+    pfp = mock_userinfo["picture"]
+
+    # Kontrola domény
+    allowed_domain = "gjk.cz"
+    if not email.lower().endswith(f"@{allowed_domain}"):
+        logging.warning("Unauthorized domain: %s tried to login", email)
+        return redirect(url_for("auth.access_denied", error='unauthorized_domain'))
+
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        user = User(email=email, name=users_name, pfp=pfp)
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    logging.info("Test user logged in: %s", email)
+
+    return redirect(url_for("view.home", user_id=user.id, name=user.name))
+
+@auth.route('/logout')
+def logout():
+    logging.info("User logged out: %s", getattr(current_user, 'email', 'unknown'))
+    logout_user()
+    return redirect(url_for("view.home"))
+
+@auth.route('/access-denied')
+def access_denied():
+    error = getattr(request, 'args', {}).get('error', 'none')
     return render_template('access-denied.html', error=error)
