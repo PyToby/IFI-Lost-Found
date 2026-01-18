@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block links %}
+<div class="hidden md:flex items-center space-x-8 text-l font-semibold">
+    <a href="/" class=" hover:text-gray-500 transition-colors duration-200">Domů</a>
+    
+    <!--info.html-->
+    <a href="{{ url_for('view.info') }}" class="hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+
+    <a href="#" class=" hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    {% if current_user.is_authenticated %}
+    <!-- Profile Picture with Dropdown -->
+    <div class="relative">
+        <button id="profile-btn" class="flex items-center hover:text-gray-500 transition-colors duration-200 focus:outline-none">
+            <img 
+                src="{{ pfp }}" 
+                alt="Profile Picture" 
+                class="w-9 h-9 rounded-full"
+            >
+        </button>
+        <!-- Dropdown menu (hidden by default) -->
+        <div id="dropdown-menu" class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black dark:ring-white ring-opacity-5 hidden">
+            <div class="py-1">
+                <a href="/profil" class="block px-4 py-2  hover:text-gray-500 transition-colors duration-200">Nastavení</a>
+                <a href="/auth/logout" class="block px-4 py-2  hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <a href="/auth/login" class="flex items-center  hover:text-gray-500 transition-colors duration-200 group">
+            Přihlásit
+            <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block mobile_menu %}
+<div id="mobile-menu" class="md:hidden hidden bg-inherit fixed inset-0 top-16 text-xl font-semibold z-50">
+    <a href="/" class="block px-6 py-3  hover:text-gray-500 transition-colors duration-200">Domů</a>
+    
+    <!--info.html-->
+    <a href="{{ url_for('view.info') }}" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+
+    <a href="#" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    {% if current_user.is_authenticated %}
+    <!-- Mobile Profile Picture and Dropdown -->
+    <div class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">
+        <button id="mobile-profile-toggle" class="flex items-center w-full">
+            <img 
+                src="{{ pfp }}" 
+                alt="Profile Picture" 
+                class="w-8 h-8 rounded-full mr-2"
+            >
+            <svg id="mobile-arrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </button>
+        <!-- Mobile Dropdown -->
+        <div id="mobile-dropdown" class="hidden mt-2 space-y-1 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black dark:ring-white ring-opacity-5">
+            <a href="/profil" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">Nastavení</a>
+            <a href="/auth/logout" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+        </div>
+    </div>
+    {% else %}
+        <a href="/auth/login" class="block px-6 py-3  hover:text-gray-500 transition-colors duration-200">
+            Přihlásit
+            <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+
+{% block content %}
+<div class="py-10 sm:py-10">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl lg:text-center">
+      <p class="mt-2 text-4xl font-semibold tracking-tight text-pretty sm:text-5xl lg:text-balance">O Projektu</p>
+      <p class="mt-6 text-lg/8">Tento projekt je zaměřený na evidenci ztrát a nálezů,</p>
+      <p class="mt-0 text-lg/8">cílem projektu je zamezit zahlcování školního e-mailu</p>
+    </div>
+    <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
+      <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="7" width="14" height="10" rx="2" ry="2" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle cx="17.5" cy="16.5" r="3" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="19.5" y1="18.5" x2="22" y2="21" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+            Nahlašování ztracených předmětů
+          </dt>
+          <dd class="mt-2 text-base/7">Uživatelé mohou snadno přidat podrobný popis a fotografie ztracených předmětů, aby ostatním pomohli je rychleji najít.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="7" width="14" height="10" rx="2" ry="2" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle cx="17.5" cy="16.5" r="3" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="19.5" y1="18.5" x2="22" y2="21" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+            </div>
+            Nahlašování nalezených předmětů
+          </dt>
+          <dd class="mt-2 text-base/7">Jednoduše nahlašte nalezené věci s popisem a fotkou, aby si majitel mohl své věci snadno vyzvednout.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 4h18l-7 8v6l-4-3v-3L3 4z" stroke-linejoin="round" stroke-linecap="round"/>
+                <circle cx="17" cy="17" r="3" stroke-linejoin="round" stroke-linecap="round"/>
+                <line x1="19.5" y1="19.5" x2="22" y2="22" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+
+            </div>
+            Vyhledávání a filtrování
+          </dt>
+          <dd class="mt-2 text-base/7">Rychle najděte konkrétní ztracené nebo nalezené věci díky filtrování podle kategorie, místa a data.</dd>
+        </div>
+        <div class="relative pl-16">
+          <dt class="text-base/7 font-semibold">
+            <div class="absolute top-0 left-0 flex size-10 items-center justify-center rounded-lg bg-indigo-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2l7 4v6c0 5-3 8-7 10-4-2-7-5-7-10V6l7-4z" stroke-linejoin="round" stroke-linecap="round"/>
+                <path d="M9 12l2 2 4-4" stroke-linejoin="round" stroke-linecap="round"/>
+              </svg>
+
+            </div>
+            Bezpečné přihlášení
+          </dt>
+          <dd class="mt-2 text-base/7">Bezpečné přihlášení pomocí vašeho školního e-mailu domény gjk.cz, které chrání vaše údaje.</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto p-7">
+    <h1 class="px-1 text-3xl font-bold mb-4">(TEMPORARY) Podmínku použití</h1>
+    <br><br>
+    <p class="px-2 text-lg leading-relaxed">
+        1. Zveřejněné ztráty a nálezy mohou smazat sami uživatelé, pokud jejich předmět našel majitele nebo byl nalezen nálezce majitelova předmětu.  
+        <br><br>
+        2. Pokud se tak nestane, budou položky automaticky mazány 1. 9. dalšího školního roku.  
+        <br><br>
+        3a. Pro zobrazení nálezů a zadání ztrát do systému je nutné se přihlásit pomocí školních přihlašovacích údajů.  
+        <br><br>
+        3b. To zajišťuje, že se u zadaných předmětů nezobrazují veřejně kontaktní údaje studentů.
+        <br><br>
+        -&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Studenti Tercie 2024/25
+    </p>
+</div>
+
+
+{% endblock %}
