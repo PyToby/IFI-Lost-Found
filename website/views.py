@@ -21,3 +21,8 @@ def profil():
     name = request.args.get("name", current_user.name)
     pfp = request.args.get("pfp", current_user.pfp)
     return render_template('profile.html', name=name, pfp=pfp, user_id=user_id, current_user=current_user)
+
+@view.route('/background_process_test')
+def background_process_test():
+    print("Hello")
+    return render_template('profile.html')

@@ -5,7 +5,7 @@
     <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
     <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
     <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-    {% if current_user.is_authenticated %}
+        {% if current_user.is_authenticated %}
     <!-- Profile Picture with Dropdown -->
     <div class="relative">
         <button id="profile-btn" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 focus:outline-none">
@@ -76,5 +76,23 @@
 {% else %}
     <h1 class="text-black text-center font-bold text-3xl p-6">Vítej na této stránce! Přihlašte se!</h1>
 {% endif %}
+<div class='container'>
+        <form>
+            <a href=# id=test><button class='btn btn-default'>Test</button></a>
+        </form>
+</div>
 {% endblock %}
 <script src="../static/script.js"></script>
+<script type=text/javascript>
+    $(function() {
+      $('a#test').on('click', function(e) {
+        e.preventDefault()
+        $.getJSON('/background_process_test',
+            function(data) {
+          //do nothing
+        });
+        return false;
+      });
+    });
+</script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
