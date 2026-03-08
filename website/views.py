@@ -114,6 +114,12 @@ test_items=[
 
 ITEMS_PER_RELOAD = 7
 
+def get_user_info():
+    if current_user.is_authenticated:
+        return current_user.id, current_user.name, current_user.pfp
+    else:
+        return None
+
 @view.route('/')
 def home():
     session["test_items_index"] = 0
@@ -123,9 +129,7 @@ def home():
         more_items_available=False
 
     if current_user.is_authenticated:
-        user_id = request.args.get("user_id", current_user.id)
-        name = request.args.get("name", current_user.name)
-        pfp = request.args.get("pfp", current_user.pfp)
+        user_id, name, pfp = get_user_info()
         return render_template('home.html', user_id=user_id, name=name, pfp=pfp, current_user=current_user,test_items=test_items[0:ITEMS_PER_RELOAD],more_items_available=more_items_available)
     else:
         return render_template('home.html', current_user=current_user,test_items=test_items[0:ITEMS_PER_RELOAD],more_items_available=more_items_available)
@@ -133,9 +137,7 @@ def home():
 @login_required
 @view.route('/profil')
 def profil():
-    user_id = request.args.get("user_id", current_user.id)
-    name = request.args.get("name", current_user.name)
-    pfp = request.args.get("pfp", current_user.pfp)
+    user_id, name, pfp = get_user_info()
     return render_template('profile.html', name=name, pfp=pfp, user_id=user_id, current_user=current_user)
 
 @view.route('/background_process_test')
@@ -145,7 +147,8 @@ def background_process_test():
 
 @view.route('/info')
 def info():
-    return render_template('info.html', current_user=current_user)
+    user_id, name, pfp = get_user_info()
+    return render_template('info.html', current_user=current_user,user_id=user_id, name=name, pfp=pfp)
 
 @view.route("/load_next_items")
 def load_next_items():
@@ -157,6 +160,7 @@ def load_next_items():
 
     return render_template("preview_list.html",test_items=test_items[test_items_index:test_items_index+ITEMS_PER_RELOAD],more_items_available=more_items_available)
 
-@view.route("/product")
-def product():
-    return render_template("product.html",current_user=current_user)
+@view.route("/item")
+def item():
+    user_id, name, pfp = get_user_info()
+    return render_template("item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp)
