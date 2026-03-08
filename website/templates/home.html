@@ -2,12 +2,6 @@
 
 {% block links %}
 <div class="hidden md:flex items-center space-x-8 text-l font-semibold">
-<<<<<<< HEAD
-    <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
-    <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
-    <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-        {% if current_user.is_authenticated %}
-=======
     <a href="/" class=" hover:text-gray-500 transition-colors duration-200">Domů</a>
     
     <!--info.html-->
@@ -15,7 +9,6 @@
 
     <a href="#" class=" hover:text-gray-500 transition-colors duration-200">Kontakt</a>
     {% if current_user.is_authenticated %}
->>>>>>> 4aa01e305e46e24f842bdcaf07d6510f4f09bb56
     <!-- Profile Picture with Dropdown -->
     <div class="relative">
         <button id="profile-btn" class="flex items-center  hover:text-gray-500 transition-colors duration-200 focus:outline-none">
@@ -89,35 +82,11 @@
 {% else %}
     <h1 class=" text-center font-bold text-3xl p-6">Vítejte na této stránce! Pro editaci obsahu se přihlaste!</h1>
 {% endif %}
-<<<<<<< HEAD
-<div class='container'>
-        <form>
-            <a href=# id=test><button class='btn btn-default'>Test</button></a>
-        </form>
-</div>
-{% endblock %}
-<script src="../static/script.js"></script>
-<script type=text/javascript>
-    $(function() {
-      $('a#test').on('click', function(e) {
-        e.preventDefault()
-        $.getJSON('/background_process_test',
-            function(data) {
-          //do nothing
-        });
-        return false;
-      });
-    });
-</script>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-=======
 
 {% include "preview_list.html" %}
-
 
 
 {% endblock %}
 
 <script src="../static/request_template.js"></script>
 <script src="../static/script.js"></script>
->>>>>>> 4aa01e305e46e24f842bdcaf07d6510f4f09bb56
