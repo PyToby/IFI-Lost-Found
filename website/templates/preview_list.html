@@ -1,21 +1,21 @@
 {% for preview in test_items%}
 
-<a class="flex items-center bg-blue-100 dark:bg-neutral-800 rounded-2xl mx-4 mb-3 overflow-hidden h-[120px]" href="item">
+<a class="flex bg-blue-100 dark:bg-neutral-800 rounded-2xl mx-4 mb-3 overflow-hidden h-[120px] place-items-center" href="item">
     <!-- Image -->
-    <div class="basis-1/2 h-full flex items-center justify-center p-2">
-        <img src="{{preview.image}}" class="h-[100px] object-contain rounded-xl max-w-full">
+    <div class="h-full shrink items-center justify-center p-2">
+        <img src="{{preview.image}}" class="h-full w-full object-contain rounded-xl">
     </div>
     
     <!-- Text -->
-    <div class="basis-3/5 h-full flex flex-col justify-center overflow-hidden px-3">
+    <div class="h-full flex-grow flex flex-col justify-center overflow-hidden px-3 min-w-[100px]">
         <strong class="truncate">{{preview.title}}</strong>
         <p class="dark:text-gray-400 text-sm line-clamp-3 overflow-hidden">{{preview.info}}</p>
     </div>
     
     <!-- Date -->
-    <div class="basis-1/4 h-full flex items-center justify-end px-3 text-sm text-right">
+    <span class="px-3 flex-none justify-end">
         {{preview.date}}
-    </div>
+    </span>
 </a>
 
 {% endfor %}
