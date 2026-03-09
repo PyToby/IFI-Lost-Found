@@ -21,9 +21,7 @@
 {% endfor %}
 
 {% if more_items_available %}
-    <div id="next_items">
-    <div class="justify-center flex">
+    <div class="justify-center flex" id="next_items">
         <button class="p-3 md:px-5 mt-5 md:7 lg:mt-9 bg-blue-400 rounded-lg dark:bg-indigo-700" hx-get="load_next_items" hx-target="#next_items" hx-swap="outerHTML">načíst další položky</button>
     </div>
-    <div>
 {% endif %}
