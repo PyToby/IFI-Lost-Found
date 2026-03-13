@@ -605,17 +605,12 @@ video {
   background-color: rgb(67 56 202 / var(--tw-bg-opacity));
 }
 
-@media (min-width: 768px) {
-  .filter_button {
-    padding-left: 1.75rem;
-    padding-right: 1.75rem;
-  }
-}
-
 @media (min-width: 1024px) {
   .filter_button {
     margin-top: 1.25rem;
     padding: 1.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
   }
 }
 

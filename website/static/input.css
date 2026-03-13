@@ -3,7 +3,7 @@
 @tailwind components;
 
 .filter_button{
-    @apply p-3 lg:p-5 mr-2 md:px-7 mt-3 mb-2 lg:mt-5 bg-blue-400 rounded-lg dark:bg-indigo-700 text-white;
+    @apply p-3 lg:p-5 mr-2 lg:px-5 mt-3 mb-2 lg:mt-5 bg-blue-400 rounded-lg dark:bg-indigo-700 text-white;
 }
 .primary_button{
     @apply p-4 lg:p-5 mr-2 md:px-7 mt-3 mb-2 lg:mt-5 bg-blue-500 rounded-lg dark:bg-indigo-700;
