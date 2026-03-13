@@ -1,3 +1,5 @@
 venv/
 website/__pycache__/
 zaloha.txt
+__pycache__
+.vscode
