@@ -1,12 +1,27 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 {% if current_user.is_authenticated %}
     <h1 class=" text-center font-bold text-3xl p-6">Vítej {{ name }}! User ID: {{ user_id }}</h1>
 {% else %}
     <h1 class=" text-center font-bold text-3xl p-6">Vítejte na této stránce! Pro editaci obsahu se přihlaste!</h1>
 {% endif %}
+
+<div class="my-6">
+
+    <button class="primary_button mb-8">Přidat nový</button>
+    <br>
+    <i>Zobrazit: </i>
+
+    <div class="flex">
+        <button class="primary_button bg-blue-900 text-white">Vše</button> 
+        <button class="primary_button">Ztraceno</button>
+        <button class="primary_button">Nalezeno</button>
+        <button class="primary_button">Archiv</button>
+        <button class="primary_button">Spam</button> 
+    </div>
+    
+</div>
 
 {% include "preview_list.html" %}
 

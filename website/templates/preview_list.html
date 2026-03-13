@@ -1,6 +1,6 @@
 {% for preview in test_items%}
 
-<a class="flex bg-blue-100 dark:bg-neutral-800 rounded-2xl mx-4 mb-3 overflow-hidden h-[120px] items-center" href="item">
+<a class="flex bg-blue-100 dark:bg-neutral-800 rounded-2xl mb-3 overflow-hidden h-[120px] items-center" href="item">
 
     <!-- Image -->
     <div class="shrink min-w-0 p-2 h-full flex items-center max-w-[250px]">
@@ -24,6 +24,6 @@
 
 {% if more_items_available %}
     <div class="justify-center flex" id="next_items">
-        <button class="p-3 md:px-5 mt-5 md:7 lg:mt-9 bg-blue-400 rounded-lg dark:bg-indigo-700" hx-get="load_next_items" hx-target="#next_items" hx-swap="outerHTML">načíst další položky</button>
+        <button class="primary_button" hx-get="load_next_items" hx-target="#next_items" hx-swap="outerHTML">načíst další položky</button>
     </div>
 {% endif %}
