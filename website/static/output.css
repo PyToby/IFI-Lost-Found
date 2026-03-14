@@ -602,7 +602,7 @@ video {
 
 .filter_button:is(.dark *) {
   --tw-bg-opacity: 1;
-  background-color: rgb(67 56 202 / var(--tw-bg-opacity));
+  background-color: rgb(79 70 229 / var(--tw-bg-opacity));
 }
 
 @media (min-width: 1024px) {
