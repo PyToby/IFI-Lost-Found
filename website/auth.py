@@ -1,16 +1,19 @@
-from flask import Blueprint, redirect, request, url_for
-from flask_login import login_user, logout_user
+from flask import Blueprint, redirect, request, url_for, render_template
+from flask_login import login_user, logout_user, current_user
 from oauthlib.oauth2 import WebApplicationClient
 import os
 import requests
 import json
+import logging
 
 from .models import User
 from . import db, login_manager
 
 auth = Blueprint('auth', __name__)
 
-GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+
+#ADMIN_EMAILS = os.getenv('ADMIN_EMAILS', '').split(',')
+'''GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
 GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
@@ -24,6 +27,7 @@ def load_user(user_id):
 
 @auth.route('/login')
 def login():
+    logging.info("Login initiated from IP: %s", request.remote_addr)
     # Get Google's provider configuration
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
     authorization_endpoint = google_provider_cfg["authorization_endpoint"]
@@ -44,6 +48,7 @@ def login():
 def callback():
     # Get the authorization code from the query string
     code = request.args.get("code")
+    logging.info("Received callback with code: %s", code)
 
     # Get Google's provider configuration to retrieve the token endpoint
     google_provider_cfg = requests.get(GOOGLE_DISCOVERY_URL).json()
@@ -68,28 +73,106 @@ def callback():
     userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
     uri, headers, body = client.add_token(userinfo_endpoint)
     userinfo_response = requests.get(uri, headers=headers, data=body)
+    userinfo = userinfo_response.json()
+    email = userinfo.get("email")
 
     if userinfo_response.json().get("email_verified"):
         email = userinfo_response.json()["email"]
         pfp = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
     else:
-        return "User email not available or not verified by Google.", 400
+        logging.warning("Unverified email attempted login: %s", email)
+        return redirect(url_for("auth.access_denied", error='email_not_verified'))
 
-    user = User.query.filter_by(email=userinfo_response.json()["email"]).first()
+    # Only allow emails from gjk.cz
+    allowed_domain = "gjk.cz"  
+    if not email.lower().endswith(f"@{allowed_domain}"):
+        #return f"Access denied: only {allowed_domain} emails are allowed. Please use a {allowed_domain} to login to IFILAF.", 403
+        logging.warning("Unauthorized domain: %s tried to login", email)
+        return redirect(url_for("auth.access_denied", error='unauthorized_domain'))
+    
+    user = User.query.filter_by(email=email).first()
     if not user:
         user = User(
             email=email,
             name=users_name,
             pfp=pfp,
+            #is_admin=(email in ADMIN_EMAILS)
         )
         db.session.add(user)
         db.session.commit()
+    else:
+        #user.is_admin = email in ADMIN_EMAILS
+        pass
 
     login_user(user)
+    logging.info("User logged in: %s", email)
     return redirect(url_for("view.home", user_id=user.id, name=user.name))
 
 @auth.route('/logout')
 def logout():
+    logging.info("User logged out: %s", getattr(current_user, 'email', 'unknown'))
     logout_user()
     return redirect(url_for("view.home"))
+
+
+@auth.route('/access-denied')
+def access_denied():
+    error = request.args.get('error', 'none')
+    return render_template('access-denied.html', error=error)'''
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+
+@auth.route('/login')
+def login():
+    logging.info("Test login initiated from IP: %s", getattr(request, 'remote_addr', 'unknown'))
+    return redirect(url_for('auth.callback'))
+
+@auth.route('/login/callback')
+def callback():
+    logging.info("Test callback invoked")
+
+
+    mock_userinfo = {
+        "email": "testuser@gjk.cz",
+        "email_verified": True,
+        "given_name": "Test",
+        "picture": "https://static.vecteezy.com/system/resources/thumbnails/032/176/191/small/business-avatar-profile-black-icon-man-of-user-symbol-in-trendy-flat-style-isolated-on-male-profile-people-diverse-face-for-social-network-or-web-vector.jpg"
+    }
+
+    email = mock_userinfo["email"]
+    users_name = mock_userinfo["given_name"]
+    pfp = mock_userinfo["picture"]
+
+    # Kontrola domény
+    allowed_domain = "gjk.cz"
+    if not email.lower().endswith(f"@{allowed_domain}"):
+        logging.warning("Unauthorized domain: %s tried to login", email)
+        return redirect(url_for("auth.access_denied", error='unauthorized_domain'))
+
+
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        user = User(email=email, name=users_name, pfp=pfp)
+        db.session.add(user)
+        db.session.commit()
+
+    login_user(user)
+    logging.info("Test user logged in: %s", email)
+
+    return redirect(url_for("view.home", user_id=user.id, name=user.name))
+
+@auth.route('/logout')
+def logout():
+    logging.info("User logged out: %s", getattr(current_user, 'email', 'unknown'))
+    logout_user()
+    return redirect(url_for("view.home"))
+
+@auth.route('/access-denied')
+def access_denied():
+    error = getattr(request, 'args', {}).get('error', 'none')
+    return render_template('access-denied.html', error=error)

@@ -1,44 +1,69 @@
 <!DOCTYPE html>
-<html lang="cz">
+<html lang="cz" class="">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.5/dist/htmx.min.js" integrity="sha384-t4DxZSyQK+0Uv4jzy5B0QyHyWQD2GFURUmxKMBVww9+e2EJ0ei/vCvv7+79z0fkr" crossorigin="anonymous"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../static/output.css">
   <title>IFILAF</title>
 </head>
-<body class="min-h-screen bg-white lg:w-3/5 lg:mx-auto">
-  <nav id="navbar" class="sticky top-0 z-50 transition-all duration-150 bg-transparent">
+<body class="min-h-screen bg-white dark:bg-neutral-900 dark:text-gray-200 lg:w-3/4 xl:w-4/6 lg:mx-auto mb-4 lg:mb-20">
+  <nav id="navbar" class="sticky top-0 z-50 transition-all duration-150 bg-transparent"> 
     <div class="flex items-center justify-between px-4 py-4 max-w-screen-lg mx-auto">
       <!-- Left: Logo -->
-      <div class="text-xl font-bold text-black">
+      <div class="text-xl font-bold">
         <a href="/">IFILAF</a>
       </div>
 
       <!-- Right: Links -->
       {% block links %}
       <div class="hidden md:flex items-center space-x-8 text-l font-semibold">
-        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Domů</a>
-        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">O Projektu</a>
-        <a href="#" class="text-black hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-        <a href="/auth/login" class="flex items-center text-black hover:text-gray-500 transition-colors duration-200 group">
-          Přihlásit
-          <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-          </svg>
+    <a href="/" class=" hover:text-gray-500 transition-colors duration-200">Domů</a>
+    
+    <!--info.html-->
+    <a href="{{ url_for('view.info') }}" class="hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+
+    <a href="#" class=" hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    {% if current_user.is_authenticated %}
+    <!-- Profile Picture with Dropdown -->
+    <div class="relative">
+        <button id="profile-btn" class="flex items-center  hover:text-gray-500 transition-colors duration-200 focus:outline-none">
+            <img 
+                src="{{ pfp }}" 
+                alt="Profile Picture" 
+                class="w-9 h-9 rounded-full"
+            >
+        </button>
+        <!-- Dropdown menu (hidden by default) -->
+        <div id="dropdown-menu" class="absolute right-0 mt-2 w-40 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black dark:ring-white ring-opacity-5 hidden">
+            <div class="py-1">
+                <!-- <a href="/profil" class="block px-4 py-2  hover:text-gray-500 transition-colors duration-200">Nastavení</a> -->
+                <span class="block px-4 py-2">{{ name }}</span>
+                <a href="/auth/logout" class="block px-4 py-2  hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+        <a href="/auth/login" class="flex items-center  hover:text-gray-500 transition-colors duration-200 group">
+            Přihlásit
+            <svg class="ml-1 w-4 h-4 rotate-180 transform transition-transform duration-200 group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="profile.svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
         </a>
-      </div>
+    {% endif %}
+</div>
       {% endblock %}
 
       <!-- Hamburger for small screens -->
       <div class="md:hidden flex items-center">
-        <button id="hamburger-icon" class="text-black focus:outline-none">
+        <button id="hamburger-icon" class=" focus:outline-none">
           <!-- Hamburger icon (default) -->
-          <svg id="hamburger" class="w-6 h-6 block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg id="hamburger" class="w-6 h-6 block" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="profile.svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
           </svg>
         
           <!-- Close icon (hidden by default) -->
-          <svg id="close-icon" class="w-6 h-6 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.878 122.88">
+          <svg id="close-icon" class="w-6 h-6 hidden" xmlns="profile.svg" viewBox="0 0 122.878 122.88">
             <path d="M1.426,8.313c-1.901-1.901-1.901-4.984,0-6.886c1.901-1.902,4.984-1.902,6.886,0l53.127,53.127l53.127-53.127 c1.901-1.902,4.984-1.902,6.887,0c1.901,1.901,1.901,4.985,0,6.886L68.324,61.439l53.128,53.128c1.901,1.901,1.901,4.984,0,6.886 c-1.902,1.902-4.985,1.902-6.887,0L61.438,68.326L8.312,121.453c-1.901,1.902-4.984,1.902-6.886,0 c-1.901-1.901-1.901-4.984,0-6.886l53.127-53.128L1.426,8.313L1.426,8.313z"/>
           </svg>
         </button>
@@ -46,27 +71,80 @@
     </div>
 
     <!-- Divider -->
-    <div id="divider" class="mx-auto h-0.5 border-t-2 border-transparent"></div>
+    <div id="divider" class="mx-auto h-0.5 bg-gray-300 dark:bg-gray-700"></div>
   </nav>
 
   <!-- Mobile menu -->
    {% block mobile_menu %}
-  <div id="mobile-menu" class="md:hidden hidden bg-white fixed inset-0 top-16 text-xl font-semibold">
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Domů</a>
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
-    <a href="#" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
-    <a href="/auth/login" class="block px-6 py-3 text-black hover:bg-gray-100 hover:text-gray-500 transition-colors duration-200">
-      Přihlásit
-      <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-      </svg>
-    </a>
-  </div>
+  <div id="mobile-menu" class="md:hidden hidden bg-inherit fixed inset-0 top-16 text-xl font-semibold">
+    <a href="/" class="block px-6 py-3  hover:text-gray-500 transition-colors duration-200">Domů</a>
+    
+    <!--info.html-->
+    <a href="{{ url_for('view.info') }}" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">O Projektu</a>
+
+    <a href="#" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">Kontakt</a>
+    {% if current_user.is_authenticated %}
+    <!-- Mobile Profile Picture and Dropdown -->
+    <div class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">
+        <button id="mobile-profile-toggle" class="flex items-center w-full">
+            <img 
+                src="{{ pfp }}" 
+                alt="Profile Picture" 
+                class="w-8 h-8 rounded-full mr-2"
+            >
+            <svg id="mobile-arrow" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="profile.svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </button>
+        <!-- Mobile Dropdown -->
+        <div id="mobile-dropdown" class="hidden mt-2 space-y-1 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black dark:ring-white ring-opacity-5">
+            <!--<a href="/profil" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">Nastavení</a> -->
+            <span class="block px-6 py-3">{{ name }}</span>
+            <a href="/auth/logout" class="block px-6 py-3 hover:text-gray-500 transition-colors duration-200">Odhlásit</a>
+        </div>
+    </div>
+    {% else %}
+        <a href="/auth/login" class="block px-6 py-3  hover:text-gray-500 transition-colors duration-200">
+            Přihlásit
+            <svg class="ml-1 inline w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="profile.svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </a>
+    {% endif %}
+</div>
+
   {% endblock %}
-  <div>
+<div class="mx-4">
     {% block content %}
     {% endblock %}
   </div>
+  <button id="darkModeToggle" 
+  class="fixed bottom-4 right-4 z-50 w-12 h-12 rounded-full bg-gray-800 dark:bg-white text-white dark:text-gray-800 flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200">
+  🌓
+</button>
+
+<script>
+  const darkModeToggle = document.getElementById('darkModeToggle');
+
+  // Load saved theme or system preference
+  if (
+    localStorage.theme === 'dark' ||
+    (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+
+  // Toggle dark mode and update localStorage
+  darkModeToggle.addEventListener('click', () => {
+    console.log('Dark mode toggle clicked');
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    localStorage.theme = isDark ? 'dark' : 'light';
+  });
+</script>
+
 </body>
 <script src="../static/script.js"></script>
 </html>

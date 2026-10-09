@@ -1,0 +1,3 @@
+main page list structure:
+
+previews = [{"image":"ifi.com/x.jpg","title":"tužka","info":"Lorem ipsum","date":"11.12. 2010"},{-||-}]
