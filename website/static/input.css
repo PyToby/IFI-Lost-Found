@@ -2,5 +2,19 @@
 
 @tailwind components;
 
+.filter_button{
+    @apply p-3 lg:p-4 mr-2 mt-3 mb-2 lg:mt-4 bg-blue-400 rounded-lg dark:bg-indigo-600 text-white;
+}
+
+.filter_button_selected{
+    @apply p-3 lg:p-4 mr-2 mt-3 mb-2 lg:mt-4 bg-blue-800 rounded-lg dark:bg-indigo-900 text-white;
+}
+.primary_button{
+    @apply p-4 lg:p-5 mr-2 md:px-7 mt-3 mb-2 lg:mt-5 bg-blue-500 rounded-lg dark:bg-indigo-700 text-white;
+}
+
+.link{
+    @apply text-blue-500 dark:text-indigo-400 hover:underline;
+}
 @tailwind utilities;
 
