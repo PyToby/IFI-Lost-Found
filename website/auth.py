@@ -2,7 +2,7 @@ from flask import Blueprint, redirect, request, url_for, render_template
 from flask_login import login_user, logout_user, current_user
 from oauthlib.oauth2 import WebApplicationClient
 import os
-import requests
+#import requests
 import json
 import logging
 
