@@ -43,7 +43,7 @@ No screenshots yet due to the project being in development.
 
 ## 🚀 [Getting started](#getting-started)
 
-**In your web browser of choice, open [Temporary IFILAF site](https://ifilaf.onrender.com/)**
+**In your web browser of choice, open [Temporary IFILAF site](https://ifilaf.onrender.com/)** or [Latest Beta](https://ifi-lost-found-beta.onrender.com/)
 <br>
 <br>
 
