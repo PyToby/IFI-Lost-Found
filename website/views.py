@@ -168,16 +168,33 @@ def load_next_items():
 
 @view.route("/item") 
 def item():
-    user_data = get_user_info()
-    if user_data == None:
-        return render_template("display_item.html",current_user=current_user, item=item, authenticated=False)
-    user_id, name, pfp, email, is_admin = user_data
 
     item = Items.query.filter_by(user_id=user_id).first()
 
-    #item = {"name":"","images":[],"descritpiton":"","date":"","location":"","user":"","category":"","folder":""} #get from db
 
+    item_data = []
+
+    item_data[0] = {
+            "name":item.name,
+            "images":item.images,
+            "description":item.description,
+            "date":item.date,
+            "location":item.location,
+            "category":item.category,
+            "folder":item.folder
+        }
+
+    item_data[1] = item.name
+    item_data[2] = item.description
+    
+    user_data = get_user_info()   
+    if user_data == None:
+        return render_template("display_item.html",current_user=current_user, item=item,table=table)
+
+    table["email"] = item.user_email
+    user_id, name, pfp, email, is_admin = user_data
+        
     if item.user_id == user_id or is_admin:
-        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item, authenticated=True)
+        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item,table=table)
     else:
-        return render_template("display_item.html",current_user=current_user, item=item, authenticated=True)
+        return render_template("display_item.html",current_user=current_user, user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item,table=table)
