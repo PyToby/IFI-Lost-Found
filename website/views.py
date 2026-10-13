@@ -114,9 +114,15 @@ test_items=[
 
 ITEMS_PER_RELOAD = 7
 
-def get_user_info():
+def get_basic_user_info():
     if current_user.is_authenticated:
         return current_user.id, current_user.name, current_user.pfp
+    else:
+        return None
+
+def get_user_info():
+    if current_user.is_authenticated:
+        return current_user.id, current_user.name, current_user.pfp, current_user.email, current_user.is_admin
     else:
         return None
 
@@ -129,7 +135,7 @@ def home():
         more_items_available=False
 
     if current_user.is_authenticated:
-        user_id, name, pfp = get_user_info()
+        user_id, name, pfp = get_basic_user_info()
         return render_template('home.html', user_id=user_id, name=name, pfp=pfp, current_user=current_user,test_items=test_items[0:ITEMS_PER_RELOAD],more_items_available=more_items_available)
     else:
         return render_template('home.html', current_user=current_user,test_items=test_items[0:ITEMS_PER_RELOAD],more_items_available=more_items_available)
@@ -137,12 +143,12 @@ def home():
 @login_required
 @view.route('/profil')
 def profil():
-    user_id, name, pfp = get_user_info()
+    user_id, name, pfp = get_basic_user_info()
     return render_template('profile.html', name=name, pfp=pfp, user_id=user_id, current_user=current_user)
 
 @view.route('/info')
 def info():
-    user_data = get_user_info()
+    user_data = get_basic_user_info()
     if user_data == None:
         return render_template('info.html',current_user=current_user)
     user_id, name, pfp = user_data
@@ -162,6 +168,12 @@ def load_next_items():
 def item():
     user_data = get_user_info()
     if user_data == None:
-        return render_template("item.html",current_user=current_user)
-    user_id, name, pfp = user_data
-    return render_template("item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp)
+        return render_template("display_item.html",current_user=current_user, item=item, authenticated=False)
+    user_id, name, pfp, email, is_admin = user_data
+
+    item = {"name":"","images":[],"descritpiton":"","date":"","location":"","user":"","category":"","folder":""} #get from db
+
+    if item["user"] == email or is_admin:
+        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item, authenticated=True)
+    else:
+        return render_template("display_item.html",current_user=current_user, item=item, authenticated=True)

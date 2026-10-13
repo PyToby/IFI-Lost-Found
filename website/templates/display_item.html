@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+
+title
+
+images
+
+description
+
+infotable
+    date
+    location
+    {% if authenticated %}
+    user
+    {% endif %}
+
+{% endblock %}
