@@ -119,7 +119,7 @@ def logout():
 @auth.route('/access-denied')
 def access_denied():
     error = request.args.get('error', 'none')
-    return render_template('access-denied.html', error=error)'''
+    return render_template('access-denied.html', error=error)
 
 
 @login_manager.user_loader
@@ -176,3 +176,57 @@ def logout():
 def access_denied():
     error = getattr(request, 'args', {}).get('error', 'none')
     return render_template('access-denied.html', error=error)
+'''
+
+auth = Blueprint('auth', __name__)
+
+@auth.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        user = User.query.filter_by(email=email).first()
+        if user and user.check_password(password):
+            login_user(user)
+            return redirect(url_for('view.home'))
+        else:
+            return render_template('login.html', error='Invalid email or password')
+    return render_template('login.html')
+
+@auth.route('/signup', methods=['POST', 'GET'])
+def signup():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        password2 = request.form.get('password2')
+
+        user = User.query.filter_by(email=email).first()
+        if password == password2:
+            if not user:
+                new_user = User(email=email)
+                new_user.set_password(password)
+                try:
+                    db.session.add(new_user)
+                    db.session.commit()
+                    login_user(new_user)
+                    return redirect(url_for('view.home'))
+                except Exception as e:
+                    db.session.rollback()
+                    print(f"Signup error: {e}")
+                    return render_template('signup.html', error='Something went wrong. Please try again later.')
+            else:
+                return render_template('signup.html', error='User already exists. Log in?')
+        else:
+            return render_template('signup.html', error="Passwords don't match. Please try again.")
+    return render_template('signup.html')
+
+@auth.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('view.home'))
+
+@auth.route('/remove_account')
+def remove_account():
+    current_user.remove()
+    return redirect(url_for('view.home'))
