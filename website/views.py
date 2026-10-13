@@ -171,7 +171,7 @@ def item():
         return render_template("display_item.html",current_user=current_user, item=item, authenticated=False)
     user_id, name, pfp, email, is_admin = user_data
 
-    item = {"name":"","images":[],"descritpiton":"","date":"","location":"","user":"","category":"","folder":""} #get from db
+    item = {"name":"","images":[],"descritpiton":"","date":"","location":"","user":"","category":"","folder":"","prize":""} #get from db
 
     if item["user"] == email or is_admin:
         return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item, authenticated=True)
