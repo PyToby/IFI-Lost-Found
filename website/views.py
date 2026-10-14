@@ -116,6 +116,12 @@ test_items=[
 
 ITEMS_PER_RELOAD = 7
 
+class Item_Data:
+    def __init__(self, name, description,table):
+        self.name = name
+        self.description = description
+        self.table = table
+
 def get_basic_user_info():
     if current_user.is_authenticated:
         return current_user.id, current_user.name, current_user.pfp
@@ -171,45 +177,26 @@ def item():
 
     item = Items.query.filter_by(user_id=user_id).first()
 
+    table = {   "name":item.name,
+                "images":item.images,
+                "description":item.description,
+                "date":item.date,
+                "location":item.location,
+                "category":item.category,
+                "folder":item.folder}
 
-    item_data = []
-
-    item_data[0] = {
-            "name":item.name,
-            "images":item.images,
-            "description":item.description,
-            "date":item.date,
-            "location":item.location,
-            "category":item.category,
-            "folder":item.folder
-        }
-
-    item_data[1] = item.name
-    item_data[2] = item.description
+    item_data = Item_Data(item.name, item.description, table)
     
-    user_data = get_user_info()   
+    user_data = get_user_info()
     if user_data == None:
-        return render_template("display_item.html",current_user=current_user, item=item,table=table)
+        return render_template("display_item.html",current_user=current_user, item_data=item_data)
 
-    table["email"] = item.user_email
+    item_data.table["email"] = item.user_email
+
     user_id, name, pfp, email, is_admin = user_data
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-    item = Items.query.filter_by(user_email=email).first()
-    print(item)
-
-    #item = {"name":"","images":[],"descritpiton":"","date":"","location":"","user":"","category":"","folder":""} #get from db
-=======
-    item = {"name":"","images":[],"descritpiton":"","date":"","location":"","user":"","category":"","folder":"","prize":""} #get from db
->>>>>>> 4352ad3c1d4ea394995fab6d603ae74c20b5f55f
 
     if item.user_email == email or is_admin:
-        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item, authenticated=True)
-=======
-        
-    if item.user_id == user_id or is_admin:
-        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item,table=table)
->>>>>>> e4cef40781fee380f106747157f633d946ce07cb
+        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item_data=item_data)
+
     else:
-        return render_template("display_item.html",current_user=current_user, user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item=item,table=table)
+        return render_template("display_item.html",current_user=current_user, user_id=user_id, name=name, pfp=pfp, item_data=item_data)
