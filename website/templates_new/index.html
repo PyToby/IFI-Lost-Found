@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<title>IFILAF — Lost &amp; Found</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%230a0a0a'/><path d='M11 8h4.5v12.5H23V25H11z' fill='%23fff'/></svg>">
+
+</head>
+
+<body>
+<!--
+DIRECTION CONTRACT
+THESIS: The board is the page — no hero, no taglines; the item grid is the entire home screen, and the only color on any page is a student's uploaded photo.
+OWN-WORLD: White paper, near-black ink, 1px zinc hairlines, a single 6px radius, one sans; tags carry state — filled black = Lost, outline = Found, grey = Resolved.
+STORY: A student lands, scans, filters, opens an item and emails its poster with no account; login only gates posting, and only school-domain accounts may post.
+FIRST VIEWPORT: sticky hairline navbar (IFILAF · Login), filter row (All/Mine · Lost/Found · search), then the grid — horizontal cards under 600px, photo columns above; Add item becomes the primary action once signed in.
+FORM: Operate; direction pinned by the black-and-white brief, so the concept roll was not run.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, DESIGN.md, and every shipping raster carrying its provenance.
+-->
+
+<a class="skip" href="#main">Skip to items</a>
+
+<header class="nav">
+  <div class="nav__inner" id="nav"></div>
+</header>
+
+<main id="main" tabindex="-1"></main>
+
+<script>
+/* ============================================================
+   IFILAF — Lost & Found
+   Single-file frontend. No backend, no build step.
+   Data lives in memory; a refresh resets to the sample data.
+
+   >>> Everything you'll want to change is in CONFIG below. <<<
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   CONFIG
+   ------------------------------------------------------------ */
+
+// 1. School domain — Google sign-in is restricted to this domain.
+const SCHOOL_DOMAIN = 'jkg.cz';
+
+// 2. Wordmark in the navbar.
+const WORDMARK = 'IFILAF';
+
+// 3. Flip to true to simulate signing in with a NON-school account
+//    and test the domain-restriction error on the login page.
+const SIMULATE_NON_SCHOOL_ACCOUNT = false;
+
+// 4. The fake accounts used by the simulated Google login.
+const SCHOOL_ACCOUNT  = { name: 'Jan Novák', email: 'jan.novak@' + SCHOOL_DOMAIN };
+const OUTSIDE_ACCOUNT = { name: 'Demo User', email: 'demo.user@gmail.com' };
+
+// 5. Categories offered in the Add-item form.
+const CATEGORIES = ['Clothing', 'Electronics', 'Keys', 'Bottles', 'Books', 'Bags', 'Other'];
+
+// Helper: an ISO date N days ago, so samples always look recent.
+function daysAgo(days, hour = 9, minute = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  d.setHours(hour, minute, 0, 0);
+  return d.toISOString();
+}
+
+// 6. Sample data (synthetic). Replace freely — `photo` is a data URL
+//    or '' for the neutral placeholder, `owner` decides who may
+//    edit/resolve/delete (items owned by SCHOOL_ACCOUNT are "Mine").
+const SEED_ITEMS = [
+  { id:'i1', type:'lost', name:'Keys with a red fabric tag', category:'Keys',
+    description:'Three keys on a carabiner: two door keys and one bike-lock key, with a red fabric tag.',
+    location:'Main hallway, 2nd floor', date:daysAgo(2,8,15), color:'Silver, red tag',
+    currentLocation:'', photo:'', owner:'jan.novak@jkg.cz', status:'open' },
+
+  { id:'i2', type:'found', name:'Black folding umbrella', category:'Other',
+    description:'Small plain black umbrella, one slightly bent spoke.',
+    location:'Entrance hall, shoe rack', date:daysAgo(1,16,40), color:'Black',
+    currentLocation:'On the hook by the lost & found box', photo:'', owner:'terka.maly@jkg.cz', status:'open' },
+
+  { id:'i3', type:'lost', name:'Navy blue Nike cap', category:'Clothing',
+    description:'Snapback cap with a small white swoosh, fairly worn in.',
+    location:'Gym hall', date:daysAgo(3,14,5), color:'Navy blue',
+    currentLocation:'', photo:'', owner:'jan.novak@jkg.cz', status:'open' },
+
+  { id:'i4', type:'found', name:'AirPods in a white case', category:'Electronics',
+    description:'Second-generation AirPods, smiley-face sticker on the case.',
+    location:'Room 112', date:daysAgo(0,11,30), color:'White',
+    currentLocation:'School office', photo:'', owner:'jakub.svoboda@jkg.cz', status:'open' },
+
+  { id:'i5', type:'lost', name:'Student ID card', category:'Other',
+    description:'Plastic ID in a transparent sleeve — name and photo visible.',
+    location:'School library', date:daysAgo(4,12,20), color:'Grey',
+    currentLocation:'', photo:'', owner:'jan.novak@jkg.cz', status:'open' },
+
+  { id:'i6', type:'found', name:'Steel water bottle, 750 ml', category:'Bottles',
+    description:'Brushed steel bottle, dented near the base, no stickers.',
+    location:'Cafeteria', date:daysAgo(1,13,10), color:'Brushed steel',
+    currentLocation:'Cafeteria counter', photo:'', owner:'karolina.dvorakova@jkg.cz', status:'resolved' },
+
+  { id:'i7', type:'lost', name:'Mathematics workbook', category:'Books',
+    description:'Softcover workbook with notes and sketches in the margins.',
+    location:'Room 204', date:daysAgo(5,10,0), color:'Green cover',
+    currentLocation:'', photo:'', owner:'jan.novak@jkg.cz', status:'open' },
+
+  { id:'i8', type:'found', name:'Grey JanSport backpack', category:'Bags',
+    description:'Notebooks and a Brno keychain inside; no wallet.',
+    location:'Bus stop in front of the school', date:daysAgo(2,15,45), color:'Grey',
+    currentLocation:'School office', photo:'', owner:'petr.novotny@jkg.cz', status:'open' },
+
+  { id:'i9', type:'lost', name:'Scientific calculator', category:'Electronics',
+    description:'Casio fx-82 with the owner\'s initials on the back cover.',
+    location:'Room 301', date:daysAgo(6,9,30), color:'Black',
+    currentLocation:'', photo:'', owner:'terka.maly@jkg.cz', status:'open' },
+
+  { id:'i10', type:'found', name:'Dark green hoodie, size M', category:'Clothing',
+    description:'Small school logo on the chest, missing one drawstring.',
+    location:'Changing room, locker area', date:daysAgo(0,8,50), color:'Dark green',
+    currentLocation:'Lost & found box at the main entrance', photo:'', owner:'jakub.svoboda@jkg.cz', status:'open' },
+];
+
+/* ------------------------------------------------------------
+   STATE (in memory only)
+   ------------------------------------------------------------ */
+const state = {
+  user: null,                                   // signed-in fake account
+  items: SEED_ITEMS.map(i => ({ ...i })),
+  filters: { mine: false, type: null, q: '' },  // type: null | 'lost' | 'found'
+  returnTo: '#/',                               // where /login sends you back
+  menuOpen: false,
+  seenGrid: false,                              // stagger only on first mount
+  justAdded: null,                              // { id, mode } → success state
+  confirmDelete: null,                          // id awaiting second click
+  loginError: '',
+};
+
+/* ------------------------------------------------------------
+   SMALL UTILITIES
+   ------------------------------------------------------------ */
+const esc = s => String(s ?? '').replace(/[&<>"']/g,
+  c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+
+const pad = n => String(n).padStart(2, '0');
+
+function fmtShort(iso) {
+  const d = new Date(iso), now = new Date();
+  const opts = { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' };
+  if (d.getFullYear() !== now.getFullYear()) opts.year = 'numeric';
+  return d.toLocaleString(undefined, opts);
+}
+const fmtFull = iso => new Date(iso).toLocaleString(undefined,
+  { dateStyle:'medium', timeStyle:'short' });
+
+function toInputValue(iso) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/* ------------------------------------------------------------
+   ICONS (authored, one 1.6 stroke, currentColor)
+   ------------------------------------------------------------ */
+const ICONS = {
+  search:'<circle cx="11" cy="11" r="7"/><path d="m16.2 16.2 4.3 4.3"/>',
+  pin:'<path d="M12 21.2s6.8-5.7 6.8-11a6.8 6.8 0 1 0-13.6 0c0 5.3 6.8 11 6.8 11Z"/><circle cx="12" cy="10.2" r="2.4"/>',
+  plus:'<path d="M12 5.2v13.6M5.2 12h13.6"/>',
+  x:'<path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/>',
+  back:'<path d="M19.5 12H5m6 6.5L5 12l6-6.5"/>',
+  check:'<path d="m5 12.5 4.6 4.6L19 7"/>',
+};
+const CAT_ICONS = {
+  Clothing:'<path d="M8.7 3.6 5.2 5.9l1.9 3.2 1.6-.9V20.5h9V8.2l1.6.9 1.9-3.2-3.5-2.3a3.4 3.4 0 0 1-6.5 0Z"/>',
+  Electronics:'<path d="M4.2 13.6v-1.8a7.8 7.8 0 0 1 15.6 0v1.8"/><path d="M4.2 13.6h2.2a1 1 0 0 1 1 1v3.3a1 1 0 0 1-1 1H5.4a1.2 1.2 0 0 1-1.2-1.2Z"/><path d="M19.8 13.6h-2.2a1 1 0 0 0-1 1v3.3a1 1 0 0 0 1 1h1a1.2 1.2 0 0 0 1.2-1.2Z"/>',
+  Keys:'<circle cx="8.2" cy="8.4" r="3.6"/><path d="m10.9 11 8.4 8.4M15.9 16l1.7 1.7M18 13.9l1.7 1.7"/>',
+  Bottles:'<path d="M10 2.6h4M10.6 2.6v3.2L9 8.2v11a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-11l-1.6-2.4V2.6"/><path d="M9.2 12.2h5.6"/>',
+  Books:'<path d="M6.4 3.6h10.9a1.4 1.4 0 0 1 1.4 1.4v14a1.4 1.4 0 0 1-1.4 1.4H6.4A1.4 1.4 0 0 1 5 19V5a1.4 1.4 0 0 1 1.4-1.4Z"/><path d="M8.8 3.6v16.8"/>',
+  Bags:'<path d="M7 9.6a5 5 0 0 1 10 0v10.8H7Z"/><path d="M9.5 9.2V7.4a2.5 2.5 0 0 1 5 0v1.8"/><path d="M10.2 13.4h3.6v3.2h-3.6z"/>',
+  Other:'<path d="M3.6 11.3V4.7a1 1 0 0 1 1-1h6.6c.28 0 .54.11.73.3l8.6 8.6a1 1 0 0 1 0 1.42l-6.6 6.6a1 1 0 0 1-1.42 0l-8.6-8.6a1 1 0 0 1-.3-.72Z"/><circle cx="8.1" cy="8.1" r="1.3"/>',
+};
+function icon(name, size = 16) {
+  const body = ICONS[name] || CAT_ICONS[name] || CAT_ICONS.Other;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+}
+const googleIcon = size => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.2c0 5-3.4 8.7-8.8 8.7A9 9 0 1 1 12.2 3c2.5 0 4.7.9 6.3 2.5l-2.7 2.6a5.3 5.3 0 0 0-3.6-1.4 5.4 5.4 0 1 0 5.3 6.3H12v-3.4h8.8c.1.6.2 1.3.2 2.2Z"/></svg>`;
+
+/* ------------------------------------------------------------
+   ROUTER
+   ------------------------------------------------------------ */
+function currentRoute() {
+  const hash = location.hash || '#/';
+  const parts = hash.slice(1).split('/').filter(Boolean);   // ['item','i3']
+  return { name: parts[0] || 'home', param: parts[1] || null, path: '#' + parts.join('/') };
+}
+
+const TITLES = {
+  home: () => `${WORDMARK} — Lost & Found`,
+  login: () => `Sign in — ${WORDMARK}`,
+  add:   () => `Add item — ${WORDMARK}`,
+  item:  id => {
+    const it = state.items.find(i => i.id === id);
+    return (it ? it.name : 'Item') + ` — ${WORDMARK}`;
+  },
+};
+
+let lastPath = null;
+const scrollMemo = {};   // where each route was left, so Back feels continuous
+
+function render() {
+  const r = currentRoute();
+
+  // Route guard: adding requires a signed-in school account.
+  if (r.name === 'add' && !state.user) {
+    state.returnTo = `#/add${r.param ? '/' + r.param : ''}`;
+    location.hash = '#/login';
+    return;
+  }
+
+  const prevPath = lastPath;
+  const pathChanged = prevPath !== r.path;
+
+  // Per-navigation state resets.
+  if (pathChanged) {
+    if (prevPath !== null) scrollMemo[prevPath] = window.scrollY;
+    state.justAdded = null;
+    state.confirmDelete = null;
+    state.loginError = '';
+    lastPath = r.path;
+  }
+
+  const view = document.getElementById('main');
+  let html;
+  if (r.name === 'login')      html = loginView();
+  else if (r.name === 'add')   html = addView(r.param);
+  else if (r.name === 'item')  html = itemView(r.param);
+  else                         html = homeView();
+
+  view.innerHTML = html;
+  view.classList.remove('is-enter');
+  void view.offsetWidth;                 // restart the route animation
+  view.classList.add('is-enter');
+
+  document.title = (TITLES[r.name] || TITLES.home)(r.param);
+  renderNav();
+
+  // On a real navigation (not the initial load): restore where the
+  // user left this route, and move focus to the new view.
+  if (prevPath !== null && pathChanged) {
+    window.scrollTo(0, scrollMemo[r.path] || 0);
+    view.focus({ preventScroll: true });
+  }
+
+  // Post-render focus management.
+  if (r.name === 'login' && state.loginError) document.getElementById('loginBtn')?.focus();
+  if (r.name === 'add' && state.justAdded) view.querySelector('.success')?.focus();
+  disarmStagger(view);
+}
+
+// Staggered first paint must stop owning transform once it has played,
+// or the cards' hover lift would stay overridden by the animation fill.
+function disarmStagger(root) {
+  const g = root.querySelector('.grid--stagger');
+  if (g) setTimeout(() => g.classList.remove('grid--stagger'), 1300);
+}
+
+/* ------------------------------------------------------------
+   NAVBAR
+   ------------------------------------------------------------ */
+function renderNav() {
+  const right = state.user
+    ? `<a class="btn btn--primary" href="#/add">${icon('plus', 15)}Add item</a>
+       <div class="nav__user">
+         <button class="avatar" data-action="toggle-menu" aria-haspopup="true"
+                 aria-expanded="${state.menuOpen}" aria-label="Account menu">
+           ${esc(state.user.name.charAt(0).toUpperCase())}
+         </button>
+         <div class="menu" id="navMenu" role="menu" ${state.menuOpen ? '' : 'hidden'}>
+           <p class="menu__email">${esc(state.user.email)}</p>
+           <button class="menu__item" role="menuitem" data-action="logout">Sign out</button>
+         </div>
+       </div>`
+    : `<a class="btn" href="#/login" data-action="go-login">Login</a>`;
+
+  document.getElementById('nav').innerHTML =
+    `<a class="wordmark" href="#/">${esc(WORDMARK)}</a><div class="nav__right">${right}</div>`;
+}
+
+/* ------------------------------------------------------------
+   HOME
+   ------------------------------------------------------------ */
+function visibleItems() {
+  const f = state.filters;
+  const q = f.q.trim().toLowerCase();
+  return state.items
+    .filter(i => !f.mine || (state.user && i.owner === state.user.email))
+    .filter(i => !f.type || i.type === f.type)
+    .filter(i => !q || [i.name, i.location, i.category, i.description, i.color]
+      .join(' ').toLowerCase().includes(q))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
+function mediaHTML(item) {
+  if (item.photo) return `<img src="${item.photo}" alt="${esc(item.name)}" loading="lazy">`;
+  return icon(item.category || 'Other', 30);
+}
+
+function cardHTML(item, i) {
+  // Grid cards carry the type tag only; status lives on the detail page.
+  const tags = `<span class="tag tag--${item.type}">${item.type === 'lost' ? 'Lost' : 'Found'}</span>`;
+  const stagger = state.seenGrid ? '' : ' style="--i:' + Math.min(i, 9) + '"';
+  return `
+    <a class="card"${stagger} href="#/item/${esc(item.id)}">
+      <div class="card__media">${mediaHTML(item)}</div>
+      <div class="card__body">
+        <div class="card__top">
+          <h3 class="card__name">${esc(item.name)}</h3>
+          <span class="card__tags">${tags}</span>
+        </div>
+        <p class="card__meta">
+          <span class="card__loc">${icon('pin', 13)}<span>${esc(item.location)}</span></span>
+          <span class="card__dot" aria-hidden="true">·</span>
+          <time datetime="${esc(item.date)}">${fmtShort(item.date)}</time>
+        </p>
+      </div>
+    </a>`;
+}
+
+function gridHTML() {
+  const list = visibleItems();
+  if (!list.length) {
+    return `<p class="empty">${state.filters.q.trim() ? 'No items match your search.' : 'No items here.'}</p>`;
+  }
+  const stagger = !state.seenGrid;
+  const html = `<div class="grid${stagger ? ' grid--stagger' : ''}">${list.map(cardHTML).join('')}</div>`;
+  if (stagger) state.seenGrid = true;
+  return html;
+}
+
+function renderGrid() {
+  const w = document.getElementById('gridwrap');
+  if (w) { w.innerHTML = gridHTML(); disarmStagger(w); }
+}
+
+function homeView() {
+  const f = state.filters;
+  return `
+    <h1 class="sr-only">Lost and found items</h1>
+    <div class="filters" role="group" aria-label="Filter items">
+      <div class="tabs">
+        <button class="tab" data-tab="all"  aria-pressed="${!f.mine}">All</button>
+        ${state.user ? `<button class="tab" data-tab="mine" aria-pressed="${f.mine}">Mine</button>` : ''}
+      </div>
+      <span class="filters__div" aria-hidden="true"></span>
+      <div class="chips">
+        <button class="chip" data-type="lost"  aria-pressed="${f.type === 'lost'}">Lost</button>
+        <button class="chip" data-type="found" aria-pressed="${f.type === 'found'}">Found</button>
+      </div>
+      <div class="search">
+        <span class="search__ico">${icon('search', 15)}</span>
+        <input id="search" type="search" placeholder="Search items" aria-label="Search items"
+               autocomplete="off" value="${esc(f.q)}">
+        <button class="search__x" data-action="clear-search" aria-label="Clear search"
+                ${f.q ? '' : 'hidden'}>${icon('x', 14)}</button>
+      </div>
+    </div>
+    <div id="gridwrap">${gridHTML()}</div>`;
+}
+
+/* ------------------------------------------------------------
+   LOGIN
+   ------------------------------------------------------------ */
+function loginView() {
+  return `
+    <h1 class="sr-only">Sign in</h1>
+    <div class="center">
+      <button class="btn btn--lg" id="loginBtn" data-action="login">
+        ${googleIcon(17)}Continue with Google
+      </button>
+      <p class="login-err" role="alert" ${state.loginError ? '' : 'hidden'}>${esc(state.loginError)}</p>
+    </div>`;
+}
+
+function doLogin() {
+  const acct = SIMULATE_NON_SCHOOL_ACCOUNT ? OUTSIDE_ACCOUNT : SCHOOL_ACCOUNT;
+  const allowed = acct.email.toLowerCase().endsWith('@' + SCHOOL_DOMAIN.toLowerCase());
+  if (!allowed) {
+    state.loginError = `Use your ${SCHOOL_DOMAIN} school account to sign in.`;
+    render();
+    return;
+  }
+  state.user = acct;
+  state.loginError = '';
+  let back = state.returnTo || '#/';
+  if (!back.startsWith('#') || back === '#/login') back = '#/';
+  state.returnTo = '#/';
+  if ((location.hash || '#/') === back) render();
+  else location.hash = back;
+}
+
+function logout() {
+  state.user = null;
+  state.filters.mine = false;
+  state.menuOpen = false;
+  if ((location.hash || '#/') === '#/') render();
+  else location.hash = '#/';
+}
+
+/* ------------------------------------------------------------
+   ADD / EDIT
+   ------------------------------------------------------------ */
+function field(opts) {
+  const { id, label, optional, control, hint } = opts;
+  return `
+    <div class="field" id="f-${id}">
+      <label class="label" for="in-${id}">${label}${optional ? ' <span class="opt">optional</span>' : ''}</label>
+      ${control}
+      ${hint ? `<p class="hint">${hint}</p>` : ''}
+      <p class="err" id="e-${id}" hidden aria-live="polite"></p>
+    </div>`;
+}
+
+function addView(id) {
+  if (state.justAdded) return successView();
+
+  const item = id ? state.items.find(i => i.id === id) : null;
+  if (id && !item) {
+    return `<a class="back" href="#/">${icon('back', 14)}Items</a>
+            <p class="empty">This item no longer exists.</p>`;
+  }
+  const v = item || {};
+  const type = v.type || 'lost';
+  const photo = v.photo || '';
+  const dt = toInputValue(v.date || new Date().toISOString());
+
+  return `
+    <h1 class="page-title">${item ? 'Edit item' : 'Add item'}</h1>
+    <form class="form" id="addForm" novalidate data-edit="${item ? esc(item.id) : ''}">
+
+      <fieldset class="fieldset">
+        <legend class="label">Type</legend>
+        <div class="seg">
+          <input type="radio" name="type" id="type-lost" value="lost" ${type === 'lost' ? 'checked' : ''}>
+          <label for="type-lost"><span>Lost</span></label>
+          <input type="radio" name="type" id="type-found" value="found" ${type === 'found' ? 'checked' : ''}>
+          <label for="type-found"><span>Found</span></label>
+          <span class="seg__ind" aria-hidden="true"></span>
+        </div>
+      </fieldset>
+
+      ${field({ id:'name', label:'Item name', control:
+        `<input class="input" id="in-name" name="name" type="text" maxlength="90"
+                placeholder="e.g. Navy blue cap" value="${esc(v.name || '')}"
+                aria-describedby="e-name" required>` })}
+
+      ${field({ id:'category', label:'Category', optional:true, control:
+        `<select id="in-category" name="category">
+           <option value="">Select category</option>
+           ${CATEGORIES.map(c => `<option value="${esc(c)}" ${v.category === c ? 'selected' : ''}>${esc(c)}</option>`).join('')}
+         </select>` })}
+
+      ${field({ id:'description', label:'Description', optional:true, control:
+        `<textarea id="in-description" name="description" maxlength="600"
+                   placeholder="Brand, distinguishing marks, contents…">${esc(v.description || '')}</textarea>` })}
+
+      <div class="field">
+        <span class="label" id="l-photo">Photo <span class="opt">optional</span></span>
+        <div class="photo">
+          <input class="sr-only" type="file" id="in-photo" accept="image/*" aria-labelledby="l-photo">
+          <label class="btn btn--ghost" for="in-photo">Choose photo</label>
+          <div class="photo__prev" id="photoPrev" ${photo ? '' : 'hidden'}>
+            <img id="photoImg" src="${photo}" alt="">
+            <button type="button" class="photo__x" data-action="remove-photo" aria-label="Remove photo">${icon('x', 13)}</button>
+          </div>
+        </div>
+      </div>
+
+      ${field({ id:'location', label: type === 'found' ? 'Where did you find it?' : 'Where did you lose it?', control:
+        `<input class="input" id="in-location" name="location" type="text" maxlength="120"
+                placeholder="e.g. Room 204, main hallway…" value="${esc(v.location || '')}"
+                aria-describedby="e-location" required>` })}
+
+      ${field({ id:'date', label:'Date and time', optional:true, control:
+        `<input class="input" id="in-date" name="date" type="datetime-local" value="${dt}">` })}
+
+      ${field({ id:'color', label:'Color', optional:true, control:
+        `<input class="input" id="in-color" name="color" type="text" maxlength="40"
+                placeholder="e.g. navy blue" value="${esc(v.color || '')}">` })}
+
+      <div class="field">
+        <span class="label" id="l-contact">Contact</span>
+        <input class="input" type="text" id="in-contact" readonly value="${esc(state.user ? state.user.email : '')}"
+               aria-labelledby="l-contact" aria-describedby="h-contact">
+        <p class="hint" id="h-contact">Your Google account email, shown on the listing.</p>
+      </div>
+
+      <div class="field ${type === 'found' ? 'field--enter' : ''}" id="currentField" ${type === 'found' ? '' : 'hidden'}>
+        <label class="label" for="in-current">Where is the item now?</label>
+        <input class="input" id="in-current" name="currentLocation" type="text" maxlength="120"
+               placeholder="e.g. Handed to the school office" value="${esc(v.currentLocation || '')}">
+      </div>
+
+      <div class="form__actions">
+        <button class="btn btn--primary btn--lg" type="submit">${item ? 'Save changes' : 'Post item'}</button>
+        ${item ? `<a class="btn btn--ghost btn--lg" href="#/item/${esc(item.id)}">Cancel</a>` : ''}
+      </div>
+    </form>`;
+}
+
+function successView() {
+  const { id, mode } = state.justAdded;
+  return `
+    <div class="success" role="status" tabindex="-1">
+      <span class="success__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="m5 12.5 4.6 4.6L19 7"/>
+        </svg>
+      </span>
+      <p class="success__line">${mode === 'edit' ? 'Changes saved.' : 'Your item is posted.'}</p>
+      <div class="success__actions">
+        <a class="btn btn--primary" href="#/item/${esc(id)}">View item</a>
+        <a class="btn btn--ghost" href="#/">Back to items</a>
+      </div>
+    </div>`;
+}
+
+function setError(fieldId, msg) {
+  const field = document.getElementById('f-' + fieldId);
+  if (!field) return;
+  field.classList.toggle('is-error', !!msg);
+  const err = field.querySelector('.err');
+  err.textContent = msg || '';
+  err.hidden = !msg;
+  const input = field.querySelector('input, textarea, select');
+  if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+}
+
+function submitForm(form) {
+  const name = form.querySelector('#in-name').value.trim();
+  const location_ = form.querySelector('#in-location').value.trim();
+
+  let firstBad = null;
+  if (!name)          { setError('name', 'Give the item a name.'); firstBad = firstBad || '#in-name'; }
+  else                { setError('name', ''); }
+  if (!location_)     { setError('location', 'Add where it was lost or found.'); firstBad = firstBad || '#in-location'; }
+  else                { setError('location', ''); }
+  if (firstBad) { form.querySelector(firstBad).focus(); return; }
+
+  const type = form.querySelector('[name=type]:checked').value;
+  const prev = document.getElementById('photoPrev');
+  const photo = (prev && !prev.hidden) ? document.getElementById('photoImg').src : '';
+  const dateRaw = form.querySelector('#in-date').value;
+  const editId = form.dataset.edit;
+  const existing = editId ? state.items.find(i => i.id === editId) : null;
+
+  const record = {
+    id: existing ? existing.id : 'i' + Date.now(),
+    type,
+    name,
+    category: form.querySelector('#in-category').value,
+    description: form.querySelector('#in-description').value.trim(),
+    location: location_,
+    date: dateRaw ? new Date(dateRaw).toISOString() : new Date().toISOString(),
+    color: form.querySelector('#in-color').value.trim(),
+    currentLocation: type === 'found' ? form.querySelector('#in-current').value.trim() : '',
+    photo,
+    owner: existing ? existing.owner : state.user.email,
+    status: existing ? existing.status : 'open',
+  };
+
+  if (existing) Object.assign(existing, record);
+  else state.items.push(record);
+
+  state.justAdded = { id: record.id, mode: existing ? 'edit' : 'add' };
+  render();
+}
+
+/* ------------------------------------------------------------
+   ITEM DETAIL
+   ------------------------------------------------------------ */
+function itemView(id) {
+  const item = state.items.find(i => i.id === id);
+  const back = `<a class="back" href="#/">${icon('back', 14)}Items</a>`;
+  if (!item) return back + `<p class="empty">This item no longer exists.</p>`;
+
+  const owner = state.user && state.user.email === item.owner;
+  const media = item.photo
+    ? `<img src="${item.photo}" alt="${esc(item.name)}">`
+    : icon(item.category || 'Other', 56);
+
+  const rows = [
+    item.category ? ['Category', esc(item.category)] : null,
+    ['Location', esc(item.location)],
+    [item.type === 'found' ? 'Found' : 'Lost', esc(fmtFull(item.date))],
+    item.color ? ['Color', esc(item.color)] : null,
+    item.type === 'found' && item.currentLocation ? ['Where it is now', esc(item.currentLocation)] : null,
+    ['Contact', `<a class="link" href="mailto:${esc(item.owner)}?subject=${encodeURIComponent((item.type === 'lost' ? 'Lost item: ' : 'Found item: ') + item.name)}">${esc(item.owner)}</a>`],
+  ].filter(Boolean);
+
+  return `
+    ${back}
+    <div class="detail">
+      <div class="d-media-col">
+        <div class="dmedia">${media}</div>
+      </div>
+      <div class="d-info">
+        <h1 class="d-title">${esc(item.name)}</h1>
+        <div class="d-tags">
+          <span class="tag tag--${item.type}">${item.type === 'lost' ? 'Lost' : 'Found'}</span>
+          <span class="tag tag--${item.status === 'resolved' ? 'resolved' : 'open'}">${item.status === 'resolved' ? 'Resolved' : 'Open'}</span>
+        </div>
+        ${item.description ? `<p class="d-desc">${esc(item.description)}</p>` : ''}
+        <dl class="dl">
+          ${rows.map(([k, v]) => `<div class="row"><dt>${k}</dt><dd>${v}</dd></div>`).join('')}
+        </dl>
+        ${owner ? `
+        <div class="actions">
+          <a class="btn btn--ghost" href="#/add/${esc(item.id)}">Edit</a>
+          ${item.status === 'open'
+            ? `<button class="btn btn--primary" data-action="mark-resolved" data-id="${esc(item.id)}">${icon('check', 15)}Mark as resolved</button>`
+            : ''}
+          <button class="btn ${state.confirmDelete === item.id ? 'btn--primary' : 'btn--ghost'}"
+                  data-action="delete" data-id="${esc(item.id)}">
+            ${state.confirmDelete === item.id ? 'Confirm delete?' : 'Delete'}
+          </button>
+        </div>` : ''}
+      </div>
+    </div>`;
+}
+
+/* ------------------------------------------------------------
+   INTERACTIONS
+   ------------------------------------------------------------ */
+function syncFilters() {
+  document.querySelectorAll('[data-tab]').forEach(b =>
+    b.setAttribute('aria-pressed', String((b.dataset.tab === 'mine') === state.filters.mine)));
+  document.querySelectorAll('[data-type]').forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.type === state.filters.type)));
+  const clear = document.querySelector('[data-action="clear-search"]');
+  if (clear) clear.hidden = !state.filters.q;
+  renderGrid();
+}
+
+function closeMenu() {
+  if (!state.menuOpen) return;
+  state.menuOpen = false;
+  const menu = document.getElementById('navMenu');
+  const btn = document.querySelector('[data-action="toggle-menu"]');
+  if (menu) menu.hidden = true;
+  if (btn) btn.setAttribute('aria-expanded', 'false');
+}
+
+function toggleMenu() {
+  state.menuOpen = !state.menuOpen;
+  const menu = document.getElementById('navMenu');
+  const btn = document.querySelector('[data-action="toggle-menu"]');
+  if (!menu || !btn) return;
+  menu.hidden = !state.menuOpen;
+  btn.setAttribute('aria-expanded', String(state.menuOpen));
+  if (state.menuOpen) menu.querySelector('.menu__item')?.focus();
+}
+
+document.addEventListener('click', e => {
+  // The skip link must not touch the hash router: focus the view instead.
+  const skip = e.target.closest('.skip');
+  if (skip) {
+    e.preventDefault();
+    const view = document.getElementById('main');
+    view.focus();
+    view.scrollIntoView();
+    return;
+  }
+
+  // Any click outside the user area closes the account menu.
+  if (state.menuOpen && !e.target.closest('.nav__user')) closeMenu();
+
+  const tab = e.target.closest('[data-tab]');
+  if (tab) { state.filters.mine = tab.dataset.tab === 'mine'; syncFilters(); return; }
+
+  const chip = e.target.closest('[data-type]');
+  if (chip) {
+    state.filters.type = state.filters.type === chip.dataset.type ? null : chip.dataset.type;
+    syncFilters();
+    return;
+  }
+
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const id = el.dataset.id;
+
+  switch (el.dataset.action) {
+    case 'go-login':
+      state.returnTo = (location.hash || '#/');
+      break;
+    case 'login':
+      doLogin();
+      break;
+    case 'toggle-menu':
+      toggleMenu();
+      break;
+    case 'logout':
+      logout();
+      break;
+    case 'clear-search': {
+      state.filters.q = '';
+      const input = document.getElementById('search');
+      if (input) { input.value = ''; input.focus(); }
+      syncFilters();
+      break;
+    }
+    case 'remove-photo': {
+      const prev = document.getElementById('photoPrev');
+      const input = document.getElementById('in-photo');
+      if (prev) prev.hidden = true;
+      if (input) input.value = '';
+      break;
+    }
+    case 'mark-resolved': {
+      const item = state.items.find(i => i.id === id);
+      if (item) item.status = 'resolved';
+      render();
+      break;
+    }
+    case 'delete': {
+      if (state.confirmDelete !== id) { state.confirmDelete = id; render(); break; }
+      state.items = state.items.filter(i => i.id !== id);
+      state.confirmDelete = null;
+      location.hash = '#/';
+      break;
+    }
+  }
+});
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'search') {
+    state.filters.q = e.target.value;
+    renderGrid();
+    const clear = document.querySelector('[data-action="clear-search"]');
+    if (clear) clear.hidden = !state.filters.q;
+    return;
+  }
+  // Inline validation clears as soon as the field is fixed.
+  if (e.target.id === 'in-name' && e.target.value.trim()) setError('name', '');
+  if (e.target.id === 'in-location' && e.target.value.trim()) setError('location', '');
+});
+
+document.addEventListener('change', e => {
+  if (e.target.id === 'in-photo') {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      document.getElementById('photoImg').src = ev.target.result;
+      document.getElementById('photoPrev').hidden = false;
+    };
+    reader.readAsDataURL(file);
+  }
+  if (e.target.name === 'type') {
+    const found = e.target.value === 'found';
+    // The location field re-words itself with the type.
+    const locLabel = document.querySelector('label[for="in-location"]');
+    const locInput = document.getElementById('in-location');
+    if (locLabel) locLabel.textContent = found ? 'Where did you find it?' : 'Where did you lose it?';
+    if (locInput) locInput.placeholder = found
+      ? 'e.g. Room 112, cafeteria…' : 'e.g. Room 204, main hallway…';
+    // Revealing the Found-only field: quick rise so it doesn't just pop in.
+    const field = document.getElementById('currentField');
+    if (!field) return;
+    field.hidden = !found;
+    if (!field.hidden) {
+      field.classList.remove('field--enter');
+      void field.offsetWidth;
+      field.classList.add('field--enter');
+    }
+  }
+});
+
+document.addEventListener('submit', e => {
+  if (e.target.id === 'addForm') { e.preventDefault(); submitForm(e.target); }
+});
+
+window.addEventListener('hashchange', render);
+render();
+</script>
+</body>
+</html>
