@@ -172,10 +172,11 @@ def load_next_items():
 
     return render_template("preview_list.html",test_items=test_items[test_items_index:test_items_index+ITEMS_PER_RELOAD],more_items_available=more_items_available)
 
-@view.route("/item") 
-def item():
 
-    item = Items.query.filter_by(user_id=user_id).first()
+@view.route("/item/<int:item_id>") 
+def item(item_id):
+
+    item = Items.query.filter_by(id=item_id).first()
 
     table = {   "name":item.name,
                 "images":item.images,
