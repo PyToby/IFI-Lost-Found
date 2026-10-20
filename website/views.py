@@ -117,10 +117,12 @@ test_items=[
 ITEMS_PER_RELOAD = 7
 
 class Item_Data:
-    def __init__(self, name, description,table):
+    def __init__(self, name, description,table,pictures=None):
         self.name = name
+        self.pictures = pictures
         self.description = description
         self.table = table
+
 
 def get_basic_user_info():
     if current_user.is_authenticated:
@@ -130,9 +132,14 @@ def get_basic_user_info():
 
 def get_user_info():
     if current_user.is_authenticated:
-        return current_user.id, current_user.name, current_user.pfp, current_user.email, current_user.is_admin
+        return current_user
     else:
         return None
+
+def is_owner(user,item_email):
+    if user.is_admin or user.email == item_email:
+        return True
+    return False
 
 @view.route('/')
 def home():
@@ -174,19 +181,18 @@ def load_next_items():
 
 
 @view.route("/item/<int:item_id>") 
-def item(item_id):
+def item_detail(item_id):
 
     item = Items.query.filter_by(id=item_id).first()
 
     table = {   "name":item.name,
-                "images":item.images,
                 "description":item.description,
                 "date":item.date,
                 "location":item.location,
                 "category":item.category,
                 "folder":item.folder}
 
-    item_data = Item_Data(item.name, item.description, table)
+    item_data = Item_Data(item.name, item.description, table, item.pictures)
     
     user_data = get_user_info()
     if user_data == None:
@@ -194,10 +200,21 @@ def item(item_id):
 
     item_data.table["email"] = item.user_email
 
-    user_id, name, pfp, email, is_admin = user_data
 
-    if item.user_email == email or is_admin:
-        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item_data=item_data)
+    if is_owner(user_data,item.user_email):
+        return render_template("edit_item.html",current_user=current_user,user_id=user_data.id, name=user_data.name, pfp=user_data.pfp, is_admin=user_data.is_admin, item_data=item_data)
 
     else:
-        return render_template("display_item.html",current_user=current_user, user_id=user_id, name=name, pfp=pfp, item_data=item_data)
+        return render_template("display_item.html",current_user=current_user, user_id=user_data.id, name=user_data.name, pfp=user_data.pfp, item_data=item_data)
+
+@view.route("/item/<int:item_id>/delete", methods=["POST"])
+def delete_item(item_id):
+    item = Items.query.filter_by(id=item_id).first()
+    user_data = get_user_info()
+    if is_owner(user_data,item.user_email):
+        # Delete the item from the database
+        return jsonify({"success": True, "message": "Item deleted successfully."})
+    else:
+        return jsonify({"success": False, "message": "You do not have permission to delete this item."}), 403
+
+request.form.get("")
