@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify,Response,session
 from flask_login import current_user, login_required
-from .models import Items
+from .models import Items, db
 
 view = Blueprint('view', __name__)
 
@@ -117,11 +117,13 @@ test_items=[
 ITEMS_PER_RELOAD = 7
 
 class Item_Data:
-    def __init__(self, name, description,table,pictures=None):
+    def __init__(self, name=None, description=None, table=None, type=None, state=None, pictures=None):
         self.name = name
         self.pictures = pictures
         self.description = description
         self.table = table
+        self.type = type
+        self.state = state
 
 
 def get_basic_user_info():
@@ -157,12 +159,12 @@ def home():
 
 @login_required
 @view.route('/profil')
-def profil():
+def display_profil():
     user_id, name, pfp = get_basic_user_info()
     return render_template('profile.html', name=name, pfp=pfp, user_id=user_id, current_user=current_user)
 
 @view.route('/info')
-def info():
+def display_info():
     user_data = get_basic_user_info()
     if user_data == None:
         return render_template('info.html',current_user=current_user)
@@ -181,18 +183,15 @@ def load_next_items():
 
 
 @view.route("/item/<int:item_id>") 
-def item_detail(item_id):
+def display_item_detail(item_id):
 
     item = Items.query.filter_by(id=item_id).first()
 
-    table = {   "name":item.name,
-                "description":item.description,
+    table = {
                 "date":item.date,
-                "location":item.location,
-                "category":item.category,
-                "folder":item.folder}
+                "location":item.location}
 
-    item_data = Item_Data(item.name, item.description, table, item.pictures)
+    item_data = Item_Data(item.name, item.description, table, item.type, item.state, item.pictures)
     
     user_data = get_user_info()
     if user_data == None:
@@ -207,14 +206,64 @@ def item_detail(item_id):
     else:
         return render_template("display_item.html",current_user=current_user, user_id=user_data.id, name=user_data.name, pfp=user_data.pfp, item_data=item_data)
 
+@view.route("/item/new")
+def display_item_form():
+    user_data = get_user_info()
+    if user_data == None:
+        return render_template("login_required.html",current_user=current_user)
+
+    return render_template("edit_item.html",current_user=current_user,user_id=user_data.id, name=user_data.name, pfp=user_data.pfp, is_admin=user_data.is_admin, item_data=Item_Data())
+
+
+@view.route("/item/create", methods=["POST"])
+def create_item():
+    user_data = get_user_info()
+    if user_data == None:
+        return jsonify({"success": False, "message": "You must be logged in to create an item."}), 403
+
+    # Create a new item with the data from the form
+    new_item = Items(
+        name=request.form.get("name"),
+        description=request.form.get("description"),
+        date=request.form.get("date"),
+        location=request.form.get("location"),
+        type=request.form.get("type"),
+        state=request.form.get("state"),
+        user_email=user_data.email
+    )
+
+    # Add the new item to the database
+    db.session.add(new_item)
+    db.session.commit()
+
+    return jsonify({"success": True, "message": "Item created successfully.", "item_id": new_item.id})
+
 @view.route("/item/<int:item_id>/delete", methods=["POST"])
 def delete_item(item_id):
     item = Items.query.filter_by(id=item_id).first()
     user_data = get_user_info()
     if is_owner(user_data,item.user_email):
         # Delete the item from the database
+        db.session.delete(item)
+        db.session.commit()
         return jsonify({"success": True, "message": "Item deleted successfully."})
     else:
         return jsonify({"success": False, "message": "You do not have permission to delete this item."}), 403
 
-request.form.get("")
+@view.route("/item/<int:item_id>/edit", methods=["POST"])
+def edit_item(item_id):
+    item = Items.query.filter_by(id=item_id).first()
+    user_data = get_user_info()
+    if is_owner(user_data,item.user_email):
+        # Update the item with the new data from the form
+        item.name = request.form.get("name")
+        item.description = request.form.get("description")
+        item.date = request.form.get("date")
+        item.location = request.form.get("location")
+        item.type = request.form.get("type")
+        item.state = request.form.get("state")
+        db.session.commit()
+        return jsonify({"success": True, "message": "Item updated successfully."})
+
+    return jsonify({"success": False, "message": "You do not have permission to edit this item."}), 403
+
