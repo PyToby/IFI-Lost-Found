@@ -63,3 +63,8 @@ def create_database(app):
     with app.app_context():
         db.create_all()
         print('Created database!')
+
+@login_manager.user_loader
+def load_user(user_id):
+    from .models import User
+    return User.query.get(int(user_id))
