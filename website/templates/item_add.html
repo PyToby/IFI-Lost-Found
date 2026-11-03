@@ -1,0 +1,24 @@
+{#- ============================================================
+    IFILAF — add item page (login required; enforce in your view).
+
+    Expected context:
+      categories  list of category names
+      current_user  { name, email }
+      values, errors  optional — re-rendered form after failed
+                      server-side validation
+
+    On success: create the item, then redirect to
+    url_for('item_detail', item_id=…) with flash_success set to
+    "Your item is posted." — that page renders the confirmation.
+    ============================================================ -#}
+{% extends "base.html" %}
+{% from "components/item_form.html" import item_form %}
+
+{% block title %}Add item — {{ wordmark|default('IFILAF') }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Add item</h1>
+{{ item_form(action=url_for('add_item'), categories=categories,
+             values=values, errors=errors, current_user=current_user,
+             submit_label='Post item') }}
+{% endblock %}

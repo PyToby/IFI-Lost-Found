@@ -1,0 +1,25 @@
+{#- ============================================================
+    IFILAF — edit item page (owner only; enforce in your view).
+
+    Expected context:
+      item       the item dict being edited (values prefill from it)
+      categories list of category names
+      current_user  { name, email }
+      values, errors  optional — re-rendered form after failed
+                      server-side validation
+
+    On success: update the item, then redirect to
+    url_for('item_detail', item_id=…) with flash_success set to
+    "Changes saved."
+    ============================================================ -#}
+{% extends "base.html" %}
+{% from "components/item_form.html" import item_form %}
+
+{% block title %}Edit item — {{ wordmark|default('IFILAF') }}{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Edit item</h1>
+{{ item_form(action=url_for('edit_item', item_id=item.id), item=item,
+             categories=categories, values=values, errors=errors,
+             current_user=current_user, submit_label='Save changes') }}
+{% endblock %}

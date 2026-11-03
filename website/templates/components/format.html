@@ -1,0 +1,37 @@
+{#- ============================================================
+    IFILAF — date formatting macros.
+    Expects item.date as a Python datetime (ISO strings render as-is).
+    Usage: {% from "components/format.html" import fmt_short, fmt_full, dt_attr %}
+    ============================================================ -#}
+
+{#- Short: "2 Oct, 08:15" — card meta. Year shown only when it differs. -#}
+{%- macro fmt_short(dt) -%}
+{%- if dt is string -%}
+  {{ dt }}
+{%- else -%}
+  {{ dt.day }} {{ dt.strftime('%b') }}{% if dt.year != (now().year if now is defined else dt.year) %} {{ dt.year }}{% endif %}, {{ '%02d:%02d'|format(dt.hour, dt.minute) }}
+{%- endif -%}
+{%- endmacro -%}
+
+{#- Full: "2 Oct 2026, 08:15" — detail page. -#}
+{%- macro fmt_full(dt) -%}
+{%- if dt is string -%}
+  {{ dt }}
+{%- else -%}
+  {{ dt.day }} {{ dt.strftime('%b %Y') }}, {{ '%02d:%02d'|format(dt.hour, dt.minute) }}
+{%- endif -%}
+{%- endmacro -%}
+
+{#- Machine-readable value for <time datetime=…>. -#}
+{%- macro dt_attr(dt) -%}
+{{ dt if dt is string else dt.isoformat(timespec='minutes') }}
+{%- endmacro -%}
+
+{#- Value for <input type="datetime-local">. -#}
+{%- macro dt_input(dt) -%}
+{%- if dt is string -%}
+  {{ dt }}
+{%- else -%}
+  {{ dt.strftime('%Y-%m-%dT%H:%M') }}
+{%- endif -%}
+{%- endmacro -%}

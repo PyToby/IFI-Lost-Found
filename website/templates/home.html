@@ -1,34 +1,62 @@
+{#- ============================================================
+    IFILAF — home page: filter row + item grid. The grid IS the page.
+
+    Expected context:
+      items     list of item dicts, already filtered + sorted newest-first
+                { id, type, name, category, location, date, photo }
+      filters   { mine: bool, type: 'lost'|'found'|None, q: str }
+      current_user  { name, email } or None
+
+    Filters are plain links + a GET form — the server does the work,
+    no JS. Endpoints: home, item_detail.
+    ============================================================ -#}
 {% extends "base.html" %}
+{% from "components/item_card.html" import item_card %}
 
 {% block content %}
+<h1 class="sr-only">Lost and found items</h1>
 
-<h1 class=" text-center font-bold text-3xl p-6">Ztráty a nálezy GJK</h1>
-
-<div class="mb-6">
-    <div class="mb-6 lg:mb-8">
-
-    {% if current_user.is_authenticated %}
-    <button class="primary_button">Přidat nový</button>
-    {% else %}
-    <strong>Pro editaci obsahu se <a href="auth/login" class="link">přihlaste!</a></strong>
+<div class="filters" role="group" aria-label="Filter items">
+  <div class="tabs">
+    <a class="tab" href="{{ url_for('home') }}"
+       {{ 'aria-current="true"' if not filters.mine }}>All</a>
+    {% if current_user %}
+    <a class="tab" href="{{ url_for('home', mine=1, type=filters.type, q=filters.q or none) }}"
+       {{ 'aria-current="true"' if filters.mine }}>Mine</a>
     {% endif %}
+  </div>
 
-    </div>
+  <span class="filters__div" aria-hidden="true"></span>
 
-    <i>Zobrazit: </i>
+  <div class="chips">
+    <a class="chip" href="{{ url_for('home', type=None if filters.type == 'lost' else 'lost', mine=1 if filters.mine else none, q=filters.q or none) }}"
+       {{ 'aria-current="true"' if filters.type == 'lost' }}>Lost</a>
+    <a class="chip" href="{{ url_for('home', type=None if filters.type == 'found' else 'found', mine=1 if filters.mine else none, q=filters.q or none) }}"
+       {{ 'aria-current="true"' if filters.type == 'found' }}>Found</a>
+  </div>
 
-    <div class="flex flex-wrap">
-        <button class="filter_button_selected">Vše</button> 
-        <button class="filter_button">Ztraceno</button>
-        <button class="filter_button">Nalezeno</button>
-        <button class="filter_button">Archiv</button>
-        <button class="filter_button">Spam</button> 
-    </div>
-    
+  <form class="search" role="search" method="get" action="{{ url_for('home') }}">
+    {% if filters.mine %}<input type="hidden" name="mine" value="1">{% endif %}
+    {% if filters.type %}<input type="hidden" name="type" value="{{ filters.type }}">{% endif %}
+    <span class="search__ico">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.2 16.2 4.3 4.3"/></svg>
+    </span>
+    <input id="search" type="search" name="q" placeholder="Search items" aria-label="Search items"
+           autocomplete="off" value="{{ filters.q }}">
+    <button type="submit" class="search__x" aria-label="Clear search" data-clear-search
+            {{ 'hidden' if not filters.q }}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6.5 6.5 11 11M17.5 6.5l-11 11"/></svg>
+    </button>
+  </form>
 </div>
 
-{% include "preview_list.html" %}
-
+{% if items %}
+<div class="grid{{ ' grid--stagger' if not filters.mine and not filters.type and not filters.q }}">
+  {% for item in items %}
+  {{ item_card(item, loop.index0) }}
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty">{{ 'No items match your search.' if filters.q else 'No items here.' }}</p>
+{% endif %}
 {% endblock %}
-
-<script src="../static/script.js"></script>

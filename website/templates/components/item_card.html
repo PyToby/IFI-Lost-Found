@@ -1,0 +1,36 @@
+{#- ============================================================
+    IFILAF — item card component (homepage grid).
+    Usage: {% from "components/item_card.html" import item_card %}
+           {{ item_card(item, loop.index0) }}
+
+    item: { id, type ('lost'|'found'), name, category, location,
+            date (datetime or ISO string), photo (URL or '') }
+    index: loop index, drives the first-load stagger (--i).
+    ============================================================ -#}
+{% from "components/icons.html" import icon %}
+{% from "components/format.html" import fmt_short, dt_attr %}
+
+{% macro item_card(item, index=0) %}
+<a class="card" style="--i: {{ [index, 9]|min }}" href="{{ url_for('item_detail', item_id=item.id) }}">
+  <div class="card__media">
+    {%- if item.photo -%}
+      <img src="{{ item.photo }}" alt="{{ item.name }}" loading="lazy">
+    {%- else -%}
+      {{ icon(item.category or 'Other', 30) }}
+    {%- endif -%}
+  </div>
+  <div class="card__body">
+    <div class="card__top">
+      <h3 class="card__name">{{ item.name }}</h3>
+      <span class="card__tags">
+        <span class="tag tag--{{ item.type }}">{{ 'Lost' if item.type == 'lost' else 'Found' }}</span>
+      </span>
+    </div>
+    <p class="card__meta">
+      <span class="card__loc">{{ icon('pin', 13) }}<span>{{ item.location }}</span></span>
+      <span class="card__dot" aria-hidden="true">·</span>
+      <time datetime="{{ dt_attr(item.date) }}">{{ fmt_short(item.date) }}</time>
+    </p>
+  </div>
+</a>
+{% endmacro %}
