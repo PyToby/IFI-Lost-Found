@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 #from sqlalchemy_imageattach.entity import Image, image_attachment
 from datetime import datetime 
 
-from . import db
+from .__init__ import db
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
