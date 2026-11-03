@@ -26,7 +26,8 @@ login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'mam_chut_te_zabit_ale_uz_to_prechazi_mas_stesti__to_je_dobre_Ondro_:)'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+    app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
     database_url = os.environ.get('DATABASE_URL')
     if database_url.startswith('postgres://'):

@@ -1,6 +1,13 @@
+import os
+import uuid
 from flask import Blueprint, render_template, request, jsonify,Response,session
 from flask_login import current_user, login_required
-from .models import Items
+from .models import Items, Image, db
+from supabase import create_client
+from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 view = Blueprint('view', __name__)
 
@@ -201,3 +208,38 @@ def item(item_id):
 
     else:
         return render_template("display_item.html",current_user=current_user, user_id=user_id, name=name, pfp=pfp, item_data=item_data)
+
+supabase = create_client(os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_KEY"))
+bucket = supabase.storage.from_("images")
+
+ALLOWED = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
+
+@view.route("/upload", methods=["GET", "POST"])
+def upload():
+    if request.method == "POST":
+        if "file" not in request.files:
+            return jsonify(error="No file part"), 400
+
+        file = request.files["file"]        
+        if file.filename == "":
+            return jsonify(error="No file selected"), 400
+        if file.mimetype not in ALLOWED:
+            return jsonify(error="Unsupported file type"), 400
+
+        data = file.read()
+        safe = secure_filename(file.filename)
+        path = f"uploads/{uuid.uuid4().hex[:8]}_{safe}"
+
+        bucket.upload(
+            path=path,
+            file=data,
+            file_options={"content-type": file.mimetype},
+        )
+
+        save_to_db = Image(pos=0, image_path=path, image_name=safe, item_id=1)
+        db.session.add(save_to_db)
+        db.session.commit()
+
+        return jsonify(path=path, url=bucket.get_public_url(path))
+        
+    return render_template("test-upload.html")

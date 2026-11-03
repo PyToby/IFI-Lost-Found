@@ -1,0 +1,29 @@
+<input type="file" id="picker" accept="image/*">
+<img id="preview" style="max-width: 300px; display: none;">
+<button id="uploadBtn">Upload</button>
+
+<script>
+const picker = document.getElementById("picker");
+const preview = document.getElementById("preview");
+
+picker.addEventListener("change", () => {
+  const file = picker.files[0];
+  if (!file) return;
+
+  // Show a local preview before uploading
+  preview.src = URL.createObjectURL(file);
+  preview.style.display = "block";
+});
+
+document.getElementById("uploadBtn").addEventListener("click", async () => {
+  const file = picker.files[0];
+  if (!file) return alert("Pick an image first");
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/upload", { method: "POST", body: formData });
+  const data = await res.json();
+  console.log(data.url); 
+});
+</script>
