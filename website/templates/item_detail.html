@@ -1,0 +1,94 @@
+{#- ============================================================
+    IFILAF — item detail page.
+    Full photo, all properties, status, contact mailto.
+    Owner sees Edit / Mark as resolved / Delete.
+
+    Expected context:
+      item   { id, type, name, category, description, location, date,
+               color, current_location, photo, owner_email, status,
+               owner_name? }
+      current_user  { name, email } or None — owner actions render
+                    only when current_user.email == item.owner_email
+      flash_success optional one-line confirmation rendered above the
+                    detail ("Your item is posted." / "Changes saved.")
+
+    Browsing never requires login. Endpoints: home, edit_item,
+    resolve_item, delete_item.
+    ============================================================ -#}
+{% extends "base.html" %}
+{% from "components/icons.html" import icon %}
+{% from "components/format.html" import fmt_full, dt_attr %}
+
+{% block title %}{{ item.name }} — {{ wordmark|default('IFILAF') }}{% endblock %}
+
+{% block content %}
+{%- set is_owner = current_user and current_user.email == item.owner_email -%}
+
+<a class="back" href="{{ url_for('home') }}">{{ icon('back', 14) }}Items</a>
+
+{% if flash_success %}
+<div class="notice" role="status" tabindex="-1">
+  <span class="notice__icon">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.6 4.6L19 7"/></svg>
+  </span>
+  {{ flash_success }}
+</div>
+{% endif %}
+
+<div class="detail">
+  <div class="d-media-col">
+    <div class="dmedia">
+      {%- if item.photo -%}
+        <img src="{{ item.photo }}" alt="{{ item.name }}">
+      {%- else -%}
+        {{ icon(item.category or 'Other', 56) }}
+      {%- endif -%}
+    </div>
+  </div>
+
+  <div class="d-info">
+    <h1 class="d-title">{{ item.name }}</h1>
+    <div class="d-tags">
+      <span class="tag tag--{{ item.type }}">{{ 'Lost' if item.type == 'lost' else 'Found' }}</span>
+      <span class="tag tag--{{ 'resolved' if item.status == 'resolved' else 'open' }}">{{ 'Resolved' if item.status == 'resolved' else 'Open' }}</span>
+    </div>
+
+    {% if item.description %}
+    <p class="d-desc">{{ item.description }}</p>
+    {% endif %}
+
+    <dl class="dl">
+      {% if item.category %}
+      <div class="row"><dt>Category</dt><dd>{{ item.category }}</dd></div>
+      {% endif %}
+      <div class="row"><dt>Location</dt><dd>{{ item.location }}</dd></div>
+      <div class="row"><dt>{{ 'Found' if item.type == 'found' else 'Lost' }}</dt><dd><time datetime="{{ dt_attr(item.date) }}">{{ fmt_full(item.date) }}</time></dd></div>
+      {% if item.color %}
+      <div class="row"><dt>Color</dt><dd>{{ item.color }}</dd></div>
+      {% endif %}
+      {% if item.type == 'found' and item.current_location %}
+      <div class="row"><dt>Where it is now</dt><dd>{{ item.current_location }}</dd></div>
+      {% endif %}
+      <div class="row">
+        <dt>Contact</dt>
+        <dd><a class="link" href="mailto:{{ item.owner_email }}?subject={{ ((item.type == 'lost' and 'Lost item: ' or 'Found item: ') ~ item.name)|urlencode }}">{{ item.owner_email }}</a></dd>
+      </div>
+    </dl>
+
+    {% if is_owner %}
+    <div class="actions">
+      <a class="btn btn--ghost" href="{{ url_for('edit_item', item_id=item.id) }}">Edit</a>
+      {% if item.status == 'open' %}
+      <form method="post" action="{{ url_for('resolve_item', item_id=item.id) }}">
+        <button class="btn btn--primary" type="submit">{{ icon('check', 15) }}Mark as resolved</button>
+      </form>
+      {% endif %}
+      <form method="post" action="{{ url_for('delete_item', item_id=item.id) }}" data-confirm="Delete this item?">
+        <button class="btn btn--ghost" type="submit">Delete</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

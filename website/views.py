@@ -2,12 +2,7 @@ import os
 import uuid
 from flask import Blueprint, render_template, request, jsonify,Response,session
 from flask_login import current_user, login_required
-from .models import Items, Image, db
-from supabase import create_client
-from werkzeug.utils import secure_filename
-from dotenv import load_dotenv
-
-load_dotenv()  # Load environment variables from .env file
+from .models import Items, db
 
 view = Blueprint('view', __name__)
 
@@ -124,10 +119,14 @@ test_items=[
 ITEMS_PER_RELOAD = 7
 
 class Item_Data:
-    def __init__(self, name, description,table):
+    def __init__(self, name=None, description=None, table=None, type=None, state=None, pictures=None):
         self.name = name
+        self.pictures = pictures
         self.description = description
         self.table = table
+        self.type = type
+        self.state = state
+
 
 def get_basic_user_info():
     if current_user.is_authenticated:
@@ -137,9 +136,14 @@ def get_basic_user_info():
 
 def get_user_info():
     if current_user.is_authenticated:
-        return current_user.id, current_user.name, current_user.pfp, current_user.email, current_user.is_admin
+        return current_user
     else:
         return None
+
+def is_owner(user,item_email):
+    if user.is_admin or user.email == item_email:
+        return True
+    return False
 
 @view.route('/')
 def home():
@@ -157,12 +161,12 @@ def home():
 
 @login_required
 @view.route('/profil')
-def profil():
+def display_profil():
     user_id, name, pfp = get_basic_user_info()
     return render_template('profile.html', name=name, pfp=pfp, user_id=user_id, current_user=current_user)
 
 @view.route('/info')
-def info():
+def display_info():
     user_data = get_basic_user_info()
     if user_data == None:
         return render_template('info.html',current_user=current_user)
@@ -181,19 +185,15 @@ def load_next_items():
 
 
 @view.route("/item/<int:item_id>") 
-def item(item_id):
+def display_item_detail(item_id):
 
     item = Items.query.filter_by(id=item_id).first()
 
-    table = {   "name":item.name,
-                "images":item.images,
-                "description":item.description,
+    table = {
                 "date":item.date,
-                "location":item.location,
-                "category":item.category,
-                "folder":item.folder}
+                "location":item.location}
 
-    item_data = Item_Data(item.name, item.description, table)
+    item_data = Item_Data(item.name, item.description, table, item.type, item.state, item.pictures)
     
     user_data = get_user_info()
     if user_data == None:
@@ -201,45 +201,71 @@ def item(item_id):
 
     item_data.table["email"] = item.user_email
 
-    user_id, name, pfp, email, is_admin = user_data
 
-    if item.user_email == email or is_admin:
-        return render_template("edit_item.html",current_user=current_user,user_id=user_id, name=name, pfp=pfp, is_admin=is_admin, item_data=item_data)
+    if is_owner(user_data,item.user_email):
+        return render_template("edit_item.html",current_user=current_user,user_id=user_data.id, name=user_data.name, pfp=user_data.pfp, is_admin=user_data.is_admin, item_data=item_data)
 
     else:
-        return render_template("display_item.html",current_user=current_user, user_id=user_id, name=name, pfp=pfp, item_data=item_data)
+        return render_template("display_item.html",current_user=current_user, user_id=user_data.id, name=user_data.name, pfp=user_data.pfp, item_data=item_data)
 
-supabase = create_client(os.environ.get("SUPABASE_URL"), os.environ.get("SUPABASE_KEY"))
-bucket = supabase.storage.from_("images")
+@view.route("/item/new")
+def display_item_form():
+    user_data = get_user_info()
+    if user_data == None:
+        return render_template("login_required.html",current_user=current_user)
 
-ALLOWED = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp"}
+    return render_template("edit_item.html",current_user=current_user,user_id=user_data.id, name=user_data.name, pfp=user_data.pfp, is_admin=user_data.is_admin, item_data=Item_Data())
 
-@view.route("/upload", methods=["GET", "POST"])
-def upload():
-    if request.method == "POST":
-        if "file" not in request.files:
-            return jsonify(error="No file part"), 400
 
-        file = request.files["file"]        
-        if file.filename == "":
-            return jsonify(error="No file selected"), 400
-        if file.mimetype not in ALLOWED:
-            return jsonify(error="Unsupported file type"), 400
+@view.route("/item/create", methods=["POST"])
+def create_item():
+    user_data = get_user_info()
+    if user_data == None:
+        return jsonify({"success": False, "message": "You must be logged in to create an item."}), 403
 
-        data = file.read()
-        safe = secure_filename(file.filename)
-        path = f"uploads/{uuid.uuid4().hex[:8]}_{safe}"
+    # Create a new item with the data from the form
+    new_item = Items(
+        name=request.form.get("name"),
+        description=request.form.get("description"),
+        date=request.form.get("date"),
+        location=request.form.get("location"),
+        type=request.form.get("type"),
+        state=request.form.get("state"),
+        user_email=user_data.email
+    )
 
-        bucket.upload(
-            path=path,
-            file=data,
-            file_options={"content-type": file.mimetype},
-        )
+    # Add the new item to the database
+    db.session.add(new_item)
+    db.session.commit()
 
-        save_to_db = Image(pos=0, image_path=path, image_name=safe, item_id=1)
-        db.session.add(save_to_db)
+    return jsonify({"success": True, "message": "Item created successfully.", "item_id": new_item.id})
+
+@view.route("/item/<int:item_id>/delete", methods=["POST"])
+def delete_item(item_id):
+    item = Items.query.filter_by(id=item_id).first()
+    user_data = get_user_info()
+    if is_owner(user_data,item.user_email):
+        # Delete the item from the database
+        db.session.delete(item)
         db.session.commit()
+        return jsonify({"success": True, "message": "Item deleted successfully."})
+    else:
+        return jsonify({"success": False, "message": "You do not have permission to delete this item."}), 403
 
-        return jsonify(path=path, url=bucket.get_public_url(path))
-        
-    return render_template("test-upload.html")
+@view.route("/item/<int:item_id>/edit", methods=["POST"])
+def edit_item(item_id):
+    item = Items.query.filter_by(id=item_id).first()
+    user_data = get_user_info()
+    if is_owner(user_data,item.user_email):
+        # Update the item with the new data from the form
+        item.name = request.form.get("name")
+        item.description = request.form.get("description")
+        item.date = request.form.get("date")
+        item.location = request.form.get("location")
+        item.type = request.form.get("type")
+        item.state = request.form.get("state")
+        db.session.commit()
+        return jsonify({"success": True, "message": "Item updated successfully."})
+
+    return jsonify({"success": False, "message": "You do not have permission to edit this item."}), 403
+

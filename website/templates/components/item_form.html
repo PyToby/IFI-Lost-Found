@@ -1,0 +1,131 @@
+{#- ============================================================
+    IFILAF — item form component (macro), shared by add and edit.
+    Single-column. Interactive behavior is CSS-only where possible:
+      - segmented Type control: radio inputs + .seg__ind
+      - "Where is the item now?" (Found only): .field--current via :has()
+      - location label swaps itself with Type via .lbl-lost/.lbl-found
+    Two tiny JS hooks remain in static/js/app.js: photo preview
+    and inline validation of the two required fields.
+
+    Usage (from item_add.html / item_edit.html):
+      {% from "components/item_form.html" import item_form %}
+      {{ item_form(action=…, categories=…, current_user=…, item=…, …) }}
+
+    Params:
+      action        form POST target (url_for('add_item') / url_for('edit_item', item_id=…))
+      categories    list of category names
+      current_user  { name, email } — fills the read-only Contact field
+      item          item dict for edit, or omit for add
+      values        dict of submitted values to re-render (after server-side
+                    validation error), takes precedence over item
+      errors        dict field-name → message
+      submit_label  button text (default 'Post item')
+    ============================================================ -#}
+{% from "components/icons.html" import icon %}
+{% from "components/format.html" import dt_input %}
+
+{%- macro item_form(action, categories, current_user, item=none, values=none, errors=none, submit_label='Post item') -%}
+{%- set err = errors or {} -%}
+{%- set val = values or {} -%}
+{%- set v_type = val.type if val.type is defined and val.type else (item.type if item else 'lost') -%}
+{%- set v_name = val.name if val.name is defined and val.name is not none else (item.name if item else '') -%}
+{%- set v_category = val.category if val.category is defined and val.category is not none else (item.category if item else '') -%}
+{%- set v_description = val.description if val.description is defined and val.description is not none else (item.description if item else '') -%}
+{%- set v_location = val.location if val.location is defined and val.location is not none else (item.location if item else '') -%}
+{%- set v_color = val.color if val.color is defined and val.color is not none else (item.color if item else '') -%}
+{%- set v_current = val.current_location if val.current_location is defined and val.current_location is not none else (item.current_location if item else '') -%}
+{%- set v_date = val.date if val.date is defined and val.date else (dt_input(item.date) if item and item.date else '') -%}
+
+<form class="form" method="post" action="{{ action }}" enctype="multipart/form-data" novalidate data-item-form>
+
+  <fieldset class="fieldset">
+    <legend class="label">Type</legend>
+    <div class="seg">
+      <input type="radio" name="type" id="type-lost" value="lost" {{ 'checked' if v_type != 'found' }}>
+      <label for="type-lost"><span>Lost</span></label>
+      <input type="radio" name="type" id="type-found" value="found" {{ 'checked' if v_type == 'found' }}>
+      <label for="type-found"><span>Found</span></label>
+      <span class="seg__ind" aria-hidden="true"></span>
+    </div>
+  </fieldset>
+
+  <div class="field{% if err.get('name') %} is-error{% endif %}" id="f-name">
+    <label class="label" for="in-name">Item name</label>
+    <input class="input" id="in-name" name="name" type="text" maxlength="90"
+           placeholder="e.g. Navy blue cap" value="{{ v_name }}"
+           aria-describedby="e-name" required>
+    <p class="err" id="e-name" aria-live="polite" {{ 'hidden' if not err.get('name') }}>{{ err.get('name', '') }}</p>
+  </div>
+
+  <div class="field">
+    <label class="label" for="in-category">Category <span class="opt">optional</span></label>
+    <select id="in-category" name="category">
+      <option value="">Select category</option>
+      {% for c in categories %}
+      <option value="{{ c }}" {{ 'selected' if v_category == c }}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div class="field">
+    <label class="label" for="in-description">Description <span class="opt">optional</span></label>
+    <textarea id="in-description" name="description" maxlength="600"
+              placeholder="Brand, distinguishing marks, contents…">{{ v_description }}</textarea>
+  </div>
+
+  <div class="field">
+    <span class="label" id="l-photo">Photo <span class="opt">optional</span></span>
+    <div class="photo">
+      <input class="sr-only" type="file" id="in-photo" name="photo" accept="image/*" aria-labelledby="l-photo">
+      <label class="btn btn--ghost" for="in-photo">Choose photo</label>
+      <div class="photo__prev" id="photoPrev" {{ 'hidden' if not (item and item.photo) }}>
+        <img id="photoImg" src="{{ item.photo if item and item.photo else '' }}" alt="">
+        <button type="button" class="photo__x" data-remove-photo aria-label="Remove photo">{{ icon('x', 13) }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="field{% if err.get('location') %} is-error{% endif %}" id="f-location">
+    <label class="label" for="in-location">
+      <span class="lbl-lost">Where did you lose it?</span><span class="lbl-found">Where did you find it?</span>
+    </label>
+    <input class="input" id="in-location" name="location" type="text" maxlength="120"
+           placeholder="e.g. Room 204, main hallway…" value="{{ v_location }}"
+           aria-describedby="e-location" required>
+    <p class="err" id="e-location" aria-live="polite" {{ 'hidden' if not err.get('location') }}>{{ err.get('location', '') }}</p>
+  </div>
+
+  <div class="field">
+    <label class="label" for="in-date">Date and time <span class="opt">optional</span></label>
+    <input class="input" id="in-date" name="date" type="datetime-local" value="{{ v_date }}">
+  </div>
+
+  <div class="field">
+    <label class="label" for="in-color">Color <span class="opt">optional</span></label>
+    <input class="input" id="in-color" name="color" type="text" maxlength="40"
+           placeholder="e.g. navy blue" value="{{ v_color }}">
+  </div>
+
+  <div class="field">
+    <span class="label" id="l-contact">Contact</span>
+    <input class="input" type="text" id="in-contact" readonly value="{{ current_user.email }}"
+           aria-labelledby="l-contact" aria-describedby="h-contact">
+    <p class="hint" id="h-contact">Your Google account email, shown on the listing.</p>
+  </div>
+
+  {#- Revealed by CSS when Type = Found; always visible where :has()
+      is unsupported — harmless, the field is optional. -#}
+  <div class="field field--current">
+    <label class="label" for="in-current">Where is the item now?</label>
+    <input class="input" id="in-current" name="current_location" type="text" maxlength="120"
+           placeholder="e.g. Handed to the school office" value="{{ v_current }}">
+  </div>
+
+  <div class="form__actions">
+    <button class="btn btn--primary btn--lg" type="submit">{{ submit_label }}</button>
+    {% if item %}
+    <a class="btn btn--ghost btn--lg" href="{{ url_for('item_detail', item_id=item.id) }}">Cancel</a>
+    {% endif %}
+  </div>
+</form>
+{%- endmacro -%}

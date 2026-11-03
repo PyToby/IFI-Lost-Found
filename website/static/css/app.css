@@ -1,6 +1,15 @@
 /* ============================================================
-   1. TOKENS
+   IFILAF — Lost & Found
+   One stylesheet for every page.
+
+   THESIS: The board is the page — no hero, no taglines; the item
+   grid is the entire home screen, and the only color on any page
+   is a student's uploaded photo.
    ============================================================ */
+
+/* ------------------------------------------------------------
+   1. TOKENS
+   ------------------------------------------------------------ */
 :root{
   --ink:#0a0a0a;            /* near-black: text, fills, Lost tag */
   --paper:#ffffff;
@@ -30,7 +39,6 @@ h1,h2,h3,p,figure,fieldset{ margin:0 }
 fieldset{ border:0; padding:0; min-width:0 }
 img{ max-width:100%; display:block }
 a{ color:inherit }
-button{ font:inherit; color:inherit }
 
 /* thin neutral scrollbar belongs to the design too */
 *{ scrollbar-width:thin; scrollbar-color:var(--g300) transparent }
@@ -56,9 +64,9 @@ button{ font:inherit; color:inherit }
 }
 .skip:focus{ top:12px }
 
-/* ============================================================
-   2. NAVBAR
-   ============================================================ */
+/* ------------------------------------------------------------
+   2. NAVBAR  (account menu is a native <details> — no JS)
+   ------------------------------------------------------------ */
 .nav{
   position:sticky; top:0; z-index:40;
   background:var(--paper); border-bottom:1px solid var(--g200);
@@ -73,6 +81,8 @@ button{ font:inherit; color:inherit }
 }
 .nav__right{ display:flex; align-items:center; gap:10px }
 .nav__user{ position:relative }
+.nav__user > summary{ list-style:none; cursor:pointer }
+.nav__user > summary::-webkit-details-marker{ display:none }
 .avatar{
   width:32px; height:32px; border-radius:50%; border:0; padding:0;
   background:var(--ink); color:#fff; font-size:13px; font-weight:700;
@@ -84,8 +94,8 @@ button{ font:inherit; color:inherit }
   position:absolute; right:0; top:calc(100% + 10px); min-width:236px; z-index:50;
   background:var(--paper); border:1px solid var(--g200); border-radius:var(--radius);
   padding:6px; transform-origin:top right;
-  animation:menu-in 150ms var(--ease-out) backwards;
 }
+.nav__user[open] .menu{ animation:menu-in 150ms var(--ease-out) backwards }
 .menu__email{
   font-size:12.5px; color:var(--text-2); padding:8px 10px 9px;
   border-bottom:1px solid var(--g200); margin-bottom:5px;
@@ -98,10 +108,11 @@ button{ font:inherit; color:inherit }
 }
 @media (hover:hover) and (pointer:fine){ .menu__item:hover{ background:var(--g100) } }
 .menu__item:active{ background:var(--g100) }
+.menu form{ margin:0 }
 
-/* ============================================================
+/* ------------------------------------------------------------
    3. BUTTONS
-   ============================================================ */
+   ------------------------------------------------------------ */
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:7px;
   height:36px; padding:0 14px; border-radius:var(--radius);
@@ -121,9 +132,9 @@ button{ font:inherit; color:inherit }
   .btn--ghost:hover{ border-color:var(--g400) }
 }
 
-/* ============================================================
-   4. FORM
-   ============================================================ */
+/* ------------------------------------------------------------
+   4. PAGE + FORM
+   ------------------------------------------------------------ */
 main{ max-width:1120px; margin:0 auto; padding:20px 16px 72px }
 .page-title{
   font-size:clamp(23px,5.5vw,28px); font-weight:600; letter-spacing:-.02em; line-height:1.15;
@@ -148,6 +159,7 @@ main{ max-width:1120px; margin:0 auto; padding:20px 16px 72px }
   transition:border-color 150ms var(--ease-out), background-color 150ms var(--ease-out);
 }
 .input, select{ height:42px; padding:0 12px }
+button.btn{ font-family:var(--font) }
 textarea{ min-height:96px; padding:11px 12px; line-height:1.55; resize:vertical }
 .input::placeholder, textarea::placeholder{ color:var(--text-2) }
 .input:hover, select:hover, textarea:hover{ border-color:var(--g400) }
@@ -183,6 +195,19 @@ select{
 }
 #type-found:checked ~ .seg__ind{ transform:translateX(100%) }
 
+/* Found-only field + location label: pure CSS via :has(), no JS */
+.lbl-found{ display:none }
+.form:has(#type-found:checked) .lbl-lost{ display:none }
+.form:has(#type-found:checked) .lbl-found{ display:inline }
+.field--current{ display:none }
+.form:has(#type-found:checked) .field--current{
+  display:flex; animation:rise 170ms var(--ease-out) backwards;
+}
+/* Browsers without :has() just show the extra field — harmless. */
+@supports not (selector(:has(*))){
+  .field--current{ display:flex }
+}
+
 /* photo upload */
 .photo{ display:flex; align-items:center; gap:12px; flex-wrap:wrap }
 #in-photo:focus-visible + .btn{ outline:2px solid var(--ink); outline-offset:2px }
@@ -202,51 +227,52 @@ select{
 
 .form__actions{ display:flex; align-items:center; gap:10px; margin-top:26px }
 
-/* success state */
-.success{
-  min-height:52vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:16px; text-align:center;
+/* success banner on the detail page after add/edit */
+.notice{
+  display:flex; align-items:center; gap:12px;
+  border:1px solid var(--g200); border-radius:var(--radius);
+  padding:12px 14px; margin-bottom:22px; font-size:14.5px; font-weight:600;
   animation:rise 260ms var(--ease-out) backwards;
 }
-.success:focus{ outline:none }
-.success__icon{
-  width:48px; height:48px; border:1px solid var(--ink); border-radius:50%;
+.notice:focus{ outline:none }
+.notice__icon{
+  flex:none; width:26px; height:26px; border:1px solid var(--ink); border-radius:50%;
   display:grid; place-items:center;
 }
-.success__icon path{ stroke-dasharray:26; stroke-dashoffset:26; animation:draw 420ms var(--ease-out) 140ms forwards }
-.success__line{ font-size:16px; font-weight:600 }
-.success__actions{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center }
+.notice__icon path{ stroke-dasharray:26; stroke-dashoffset:26; animation:draw 420ms var(--ease-out) 140ms forwards }
 
-/* ============================================================
-   5. FILTER ROW
-   ============================================================ */
+/* ------------------------------------------------------------
+   5. FILTER ROW  (tabs/chips are links, search is a GET form)
+   ------------------------------------------------------------ */
 .filters{
   display:flex; flex-wrap:wrap; align-items:center; gap:8px 10px;
   padding:6px 0 18px;
 }
 .tabs{ display:flex; align-items:center; gap:2px }
 .tab{
+  display:inline-flex; align-items:center;
   background:none; border:0; border-bottom:1.5px solid transparent;
   padding:7px 10px 8px; font-size:14px; font-weight:500; color:var(--text-2);
-  cursor:pointer; border-radius:0;
+  cursor:pointer; border-radius:0; text-decoration:none;
   transition:color 150ms var(--ease-out), border-color 150ms var(--ease-out);
 }
-.tab[aria-pressed="true"]{ color:var(--ink); font-weight:650; border-bottom-color:var(--ink) }
+.tab[aria-current="true"]{ color:var(--ink); font-weight:650; border-bottom-color:var(--ink) }
 .tab:active{ transform:scale(.97) }
 .filters__div{ width:1px; height:20px; background:var(--g200) }
 .chips{ display:flex; gap:8px }
 .chip{
+  display:inline-flex; align-items:center;
   height:33px; padding:0 13px; border-radius:var(--radius);
   border:1px solid var(--g200); background:var(--paper); color:var(--ink);
-  font-size:13.5px; font-weight:600; cursor:pointer;
+  font-size:13.5px; font-weight:600; cursor:pointer; text-decoration:none;
   transition:transform 150ms var(--ease-out), background-color 150ms var(--ease-out),
              color 150ms var(--ease-out), border-color 150ms var(--ease-out);
 }
-.chip[aria-pressed="true"]{ background:var(--ink); border-color:var(--ink); color:#fff }
+.chip[aria-current="true"]{ background:var(--ink); border-color:var(--ink); color:#fff }
 .chip:active{ transform:scale(.97) }
 @media (hover:hover) and (pointer:fine){ .chip:hover{ border-color:var(--ink) } }
 
-.search{ position:relative; display:flex; align-items:center; flex:1 1 100%; order:3 }
+.search{ position:relative; display:flex; align-items:center; flex:1 1 100%; order:3; margin:0 }
 .search__ico{ position:absolute; left:11px; color:var(--g500); pointer-events:none; display:flex }
 .search input{
   width:100%; height:38px; padding:0 34px 0 34px;
@@ -268,9 +294,9 @@ select{
 }
 .search__x:hover{ color:var(--ink); background:var(--g100) }
 
-/* ============================================================
+/* ------------------------------------------------------------
    6. ITEM GRID + CARDS
-   ============================================================ */
+   ------------------------------------------------------------ */
 .grid{ display:grid; grid-template-columns:1fr; gap:12px }
 .card{
   display:flex; gap:14px; min-width:0; text-decoration:none;
@@ -318,9 +344,9 @@ select{
   padding:72px 0; text-align:center; font-size:14.5px; color:var(--text-2);
 }
 
-/* ============================================================
+/* ------------------------------------------------------------
    7. ITEM DETAIL
-   ============================================================ */
+   ------------------------------------------------------------ */
 .back{
   display:inline-flex; align-items:center; gap:7px;
   font-size:14px; font-weight:500; color:var(--text-2); text-decoration:none;
@@ -351,35 +377,36 @@ select{
 .link{ color:var(--ink); text-underline-offset:3px; text-decoration-thickness:1px; font-weight:500 }
 @media (hover:hover) and (pointer:fine){ .link:hover{ text-decoration-thickness:2px } }
 .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:24px }
+.actions form{ margin:0 }
 
-/* ============================================================
+/* ------------------------------------------------------------
    8. LOGIN
-   ============================================================ */
+   ------------------------------------------------------------ */
 .center{
   min-height:calc(100svh - var(--nav-h) - 140px);
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
 }
+.center form{ margin:0 }
 .login-err{
   font-size:13.5px; font-weight:500; color:var(--ink); text-align:center;
   animation:rise 180ms var(--ease-out) backwards;
 }
 
-/* ============================================================
+/* ------------------------------------------------------------
    9. MOTION
-   ============================================================ */
+   ------------------------------------------------------------ */
 @keyframes rise{ from{ opacity:0; transform:translateY(6px) } to{ opacity:1; transform:none } }
 @keyframes draw{ to{ stroke-dashoffset:0 } }
 @keyframes menu-in{ from{ opacity:0; transform:scale(.97) } to{ opacity:1; transform:none } }
 
-/* route enter — purpose: orient the swap, once per navigation */
+/* page enter — purpose: orient the navigation, once per load */
 main.is-enter{ animation:rise 240ms var(--ease-out) backwards }
-/* first grid mount only — removed after it plays so hover keeps working */
+/* first landing on an unfiltered board only — staggered so the grid
+   arrives as a cascade; filtered/search views render instantly */
 .grid--stagger > .card{
   animation:rise 300ms var(--ease-out) backwards;
   animation-delay:calc(var(--i,0) * 45ms);
 }
-/* a field appearing because Type switched to Found */
-.field--enter{ animation:rise 170ms var(--ease-out) backwards }
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
@@ -389,9 +416,9 @@ main.is-enter{ animation:rise 240ms var(--ease-out) backwards }
   .btn:active,.chip:active,.tab:active,.avatar:active,.card:hover{ transform:none !important }
 }
 
-/* ============================================================
+/* ------------------------------------------------------------
    10. RESPONSIVE
-   ============================================================ */
+   ------------------------------------------------------------ */
 @media (min-width:600px){
   main{ padding:26px 24px 88px }
   .nav__inner{ padding:0 24px }
